@@ -15,10 +15,14 @@ ELSE(ITK_FOUND)
   MESSAGE(FATAL_ERROR "Cannot locate ITK directory.")
 ENDIF(ITK_FOUND)
 
+SET(XML GaussianBlurImageFilter.xml)
+
 ADD_PARAVIEW_PLUGIN(${PLUGIN} 1.0
-	SERVER_MANAGER_XML     GaussianBlurImageFilter.xml
+	SERVER_MANAGER_XML     ${XML}
 	SERVER_MANAGER_SOURCES vtkGaussianBlurImageFilter.cxx
+	SOURCES ${XML}
 )
+
 
 # This lets you build INSTALL and have it automatically drop the
 # resulting DLLs in the directory where they will be autoloaded

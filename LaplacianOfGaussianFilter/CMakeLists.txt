@@ -15,9 +15,12 @@ ELSE(ITK_FOUND)
   MESSAGE(FATAL_ERROR "Cannot locate ITK directory.")
 ENDIF(ITK_FOUND)
 
+SET(XML LaplacianOfGaussianFilter.xml)
+
 ADD_PARAVIEW_PLUGIN(${PLUGIN} 1.0
-	SERVER_MANAGER_XML     LaplacianOfGaussianFilter.xml
+	SERVER_MANAGER_XML     ${XML}
 	SERVER_MANAGER_SOURCES vtkLaplacianOfGaussianFilter.cxx
+	SOURCES ${XML}
 )
 
 # This lets you build INSTALL and have it automatically drop the
