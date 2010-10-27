@@ -56,11 +56,9 @@ public:
   //void SetStandardDeviation(double sigma0, double sigma1, double sigma2);
   //void SetStandardDeviation(double sigma[3]);
 
-//  vtkSetVector3Macro(NeighborhoodRadius, int);
-//  vtkGetVector3Macro(NeighborhoodRadius, int);
+  vtkSetVector3Macro(NeighborhoodRadius, int);
+  vtkGetVector3Macro(NeighborhoodRadius, int);
 
-  vtkSetVector3Macro(NeighborhoodRadius, double);
-  vtkGetVector3Macro(NeighborhoodRadius, double);
 
 protected:
   vtkMedianImageFilter();

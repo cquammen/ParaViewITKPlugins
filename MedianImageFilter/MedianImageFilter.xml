@@ -22,8 +22,8 @@
            </DataTypeDomain>
       </InputProperty>
 
-     <DoubleVectorProperty
-        name="Radius"
+      <IntVectorProperty
+         name="Radius"
          label="Radius"
          command="SetNeighborhoodRadius"
          number_of_elements="3"
@@ -31,7 +31,7 @@
          <Documentation>
            .
          </Documentation>
-      </DoubleVectorProperty>
+      </IntVectorProperty>
 
    <!-- End filter -->
    </SourceProxy>
