@@ -30,7 +30,7 @@
          default_values="1.0" >
       </DoubleVectorProperty>
 
-   <!-- End GaussianImageFilter -->
+   <!-- End filter -->
    </SourceProxy>
  </ProxyGroup>
 </ServerManagerConfiguration>

@@ -33,7 +33,7 @@
          </Documentation>
       </IntVectorProperty>
 
-   <!-- End GaussianImageFilter -->
+   <!-- End filter -->
    </SourceProxy>
  </ProxyGroup>
 </ServerManagerConfiguration>
