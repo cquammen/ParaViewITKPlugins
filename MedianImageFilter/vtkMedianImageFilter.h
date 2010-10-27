@@ -56,19 +56,19 @@ public:
   //void SetStandardDeviation(double sigma0, double sigma1, double sigma2);
   //void SetStandardDeviation(double sigma[3]);
 
-  vtkSetVector3Macro(NeighborhoodRadius, double);
-  vtkGetVector3Macro(NeighborhoodRadius, double);
+  vtkSetVector3Macro(NeighborhoodRadius, int);
+  vtkGetVector3Macro(NeighborhoodRadius, int);
 
 protected:
   vtkMedianImageFilter();
   ~vtkMedianImageFilter();
 
-  double NeighborhoodRadius[3];
+  int NeighborhoodRadius[3];
 
   vtkImageExport*                VTKExporter;
   //BTX
   ITKImageImportType::Pointer    ITKImporter;
-  ITKMedianFilterType::Pointer MedianFilter;
+  ITKMedianFilterType::Pointer   MedianFilter;
   ITKImageExportType::Pointer    ITKExporter;
   //ETX
   vtkImageImport*                VTKImporter;

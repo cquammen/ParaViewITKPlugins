@@ -4,7 +4,7 @@
        a filter already in ParaView (in Servers/ServerManager/Resources/*.xml)
        that matches your filter and then model your xml on it -->
   <ProxyGroup name="filters">
-   <SourceProxy name="GaussianFilter" class="vtkGaussianBlurImageFilter" label="Gaussian Blur">
+   <SourceProxy name="GaussianFilter" class="vtkGaussianBlurImageFilter" label="Gaussian Image Blur">
      <Documentation
         long_help="Apply a Gaussian blur to the image."
         short_help=".">
@@ -30,7 +30,7 @@
          animateable="1 1 1"
          default_values="1.0 1.0 1.0" >
          <Documentation>
-           Define one end of the line (small scalar values). Default is (0,0,0).
+           .
          </Documentation>
       </DoubleVectorProperty>
 

@@ -45,7 +45,7 @@ vtkMedianImageFilter::~vtkMedianImageFilter()
     {
       this->VTKExporter->Delete();
     }
-  
+
   if (this->VTKImporter)
     {
       this->VTKImporter->Delete();
@@ -111,7 +111,6 @@ int vtkMedianImageFilter::RequestData(vtkInformation *request,
   castSource->SetInput(input);
   castSource->Update();
 
-  
   // Hook up to the beginning of the ITK pipeline
   this->VTKExporter->SetInput(castSource->GetOutput());
 
@@ -121,7 +120,6 @@ int vtkMedianImageFilter::RequestData(vtkInformation *request,
   // Set up ITK pipeline settings here
   this->MedianFilter->SetInput(this->ITKImporter->GetOutput());
 
-//  double radius[3];
   ITKImageType::SizeType radius;
   for (unsigned int i = 0; i < 3; i++)
     {

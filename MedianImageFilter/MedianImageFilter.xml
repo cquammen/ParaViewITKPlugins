@@ -4,9 +4,9 @@
        a filter already in ParaView (in Servers/ServerManager/Resources/*.xml)
        that matches your filter and then model your xml on it -->
   <ProxyGroup name="filters">
-   <SourceProxy name="MedianFilter" class="vtkMedianImageFilter" label="Median">
+   <SourceProxy name="MedianFilter" class="vtkMedianImageFilter" label="Median Image Filter">
      <Documentation
-        long_help="Apply a Median blur to the image."
+        long_help="Apply a median filter to the image."
         short_help=".">
           Put some text describing the filter here.
      </Documentation>
@@ -22,16 +22,16 @@
            </DataTypeDomain>
       </InputProperty>
 
-      <DoubleVectorProperty
+      <IntVectorProperty
          name="Radius"
          label="Radius"
          command="SetNeighborhoodRadius"
          number_of_elements="3"
-         default_values="1.0 1.0 1.0" >
+         default_values="3 3 3" >
          <Documentation>
-           Define one end of the line (small scalar values). Default is (0).
+           .
          </Documentation>
-      </DoubleVectorProperty>
+      </IntVectorProperty>
 
    <!-- End GaussianImageFilter -->
    </SourceProxy>

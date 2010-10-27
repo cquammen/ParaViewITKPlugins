@@ -4,9 +4,9 @@
        a filter already in ParaView (in Servers/ServerManager/Resources/*.xml)
        that matches your filter and then model your xml on it -->
   <ProxyGroup name="filters">
-   <SourceProxy name="LaplacianGaussianFilter" class="vtkLaplacianOfGaussianFilter" label="Laplacian of Guassian Blur">
+   <SourceProxy name="LaplacianGaussianFilter" class="vtkLaplacianOfGaussianFilter" label="Laplacian of Guassian Image Blur">
      <Documentation
-        long_help="Apply a Laplacian of Gaussian to the image."
+        long_help="Apply a Laplacian of Gaussian filter to the image."
         short_help=".">
           Put some text describing the filter here.
      </Documentation>
