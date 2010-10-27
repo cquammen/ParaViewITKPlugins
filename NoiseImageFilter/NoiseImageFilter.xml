@@ -22,6 +22,20 @@
            </DataTypeDomain>
       </InputProperty>
 
+     <IntVectorProperty
+        name="Noise Type"
+        command="SetNoiseType"
+        number_of_elements="1"
+        default_values="0" >
+       <EnumerationDomain name="enum">
+         <Entry value="0" text="Gaussian Noise"/>
+         <Entry value="1" text="Poisson Noise"/>
+       </EnumerationDomain>
+       <Documentation>
+         Choose which type of noise to add to the image.
+       </Documentation>
+     </IntVectorProperty>
+
       <DoubleVectorProperty
          name="Standard Deviation"
          label="StandardDeviation"

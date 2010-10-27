@@ -28,6 +28,7 @@
 #include <itkVTKImageImport.h>
 #include <itkVTKImageExport.h>
 #include <itkAdditiveGaussianNoiseImageFilter.h>
+#include <itkShotNoiseImageFilter.h>
 
 class vtkImageExport;
 class vtkImageImport;
@@ -46,12 +47,23 @@ public:
   typedef itk::VTKImageExport< ITKImageType >
     ITKImageExportType;
   typedef itk::AdditiveGaussianNoiseImageFilter< ITKImageType, ITKImageType >
-    ITKNoiseFilterType;
+    ITKGaussianNoiseFilterType;
+  typedef itk::ShotNoiseImageFilter< ITKImageType, ITKImageType >
+    ITKPoissonNoiseFilterType;
+
+  enum {
+    GAUSSIAN_NOISE = 0,
+    POISSON_NOISE  = 1
+  };
   //ETX
 
   static vtkNoiseImageFilter* New();
   vtkTypeMacro(vtkNoiseImageFilter, vtkImageAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
+
+  // Set/get the noise type
+  vtkSetMacro(NoiseType, int);
+  vtkGetMacro(NoiseType, int);
 
   // Set/get the mean for additive Gaussian noise.
   vtkSetMacro(Mean, double);
@@ -65,14 +77,17 @@ protected:
   vtkNoiseImageFilter();
   ~vtkNoiseImageFilter();
 
+  int NoiseType;
+
   double Mean;
   double StandardDeviation;
 
   vtkImageExport*                VTKExporter;
   //BTX
-  ITKImageImportType::Pointer ITKImporter;
-  ITKNoiseFilterType::Pointer NoiseFilter;
-  ITKImageExportType::Pointer ITKExporter;
+  ITKImageImportType::Pointer         ITKImporter;
+  ITKGaussianNoiseFilterType::Pointer GaussianNoiseFilter;
+  ITKPoissonNoiseFilterType::Pointer  PoissonNoiseFilter;
+  ITKImageExportType::Pointer         ITKExporter;
   //ETX
   vtkImageImport*                VTKImporter;
 

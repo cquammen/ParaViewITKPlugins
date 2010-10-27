@@ -14,7 +14,6 @@
 =========================================================================*/
 #include "vtkNoiseImageFilter.h"
 
-
 #include "vtkObjectFactory.h"
 #include "vtkImageExport.h"
 #include "vtkImageImport.h"
@@ -33,9 +32,11 @@ vtkStandardNewMacro(vtkNoiseImageFilter);
 //----------------------------------------------------------------------------
 vtkNoiseImageFilter::vtkNoiseImageFilter()
 {
+  this->NoiseType = GAUSSIAN_NOISE;
   this->VTKExporter = vtkImageExport::New();
   this->ITKImporter = ITKImageImportType::New();
-  this->NoiseFilter = ITKNoiseFilterType::New();
+  this->GaussianNoiseFilter = ITKGaussianNoiseFilterType::New();
+  this->PoissonNoiseFilter  = ITKPoissonNoiseFilterType::New();
   this->ITKExporter = ITKImageExportType::New();
   this->VTKImporter = vtkImageImport::New();
 
@@ -119,14 +120,28 @@ int vtkNoiseImageFilter::RequestData(vtkInformation *request,
   // Hook up to the beginning of the ITK pipeline
   this->VTKExporter->SetInput(castSource->GetOutput());
 
-  // Set up ITK pipeline settings here
-  this->NoiseFilter->SetInput(this->ITKImporter->GetOutput());
-  this->NoiseFilter->SetMean(this->Mean);
-  this->NoiseFilter->SetStandardDeviation(this->StandardDeviation);
-  this->NoiseFilter->Update();
+  this->GaussianNoiseFilter->SetInput(NULL);
+  this->PoissonNoiseFilter->SetInput(NULL);
 
   // Now connect the ITK pipeline output to the VTK output
-  this->ITKExporter->SetInput(this->NoiseFilter->GetOutput());
+  if (NoiseType == GAUSSIAN_NOISE)
+    {
+    this->GaussianNoiseFilter->SetInput(this->ITKImporter->GetOutput());
+    this->GaussianNoiseFilter->SetMean(this->Mean);
+    this->GaussianNoiseFilter->SetStandardDeviation(this->StandardDeviation);
+
+    this->GaussianNoiseFilter->Update();
+
+    this->ITKExporter->SetInput(this->GaussianNoiseFilter->GetOutput());
+    }
+  else if (NoiseType == POISSON_NOISE)
+    {
+    this->PoissonNoiseFilter->SetInput(this->ITKImporter->GetOutput());
+    this->PoissonNoiseFilter->Update();
+
+    this->ITKExporter->SetInput(this->PoissonNoiseFilter->GetOutput());
+    }
+
   this->ITKExporter->Update();
 
   vtkInformation *outInfo = outputVector->GetInformationObject(0);
@@ -138,6 +153,9 @@ int vtkNoiseImageFilter::RequestData(vtkInformation *request,
       return 0;
     }
 
+  // For some reason, updates don't seem to go through unless you call
+  // the following twice.
+  this->VTKImporter->Update();
   this->VTKImporter->Update();
 
   output->DeepCopy(this->VTKImporter->GetOutput());
