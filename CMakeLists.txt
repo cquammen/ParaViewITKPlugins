@@ -15,7 +15,11 @@ ELSE(ITK_FOUND)
   MESSAGE(FATAL_ERROR "Cannot locate ITK directory.")
 ENDIF(ITK_FOUND)
 
+# Add supporting directories below
+ADD_SUBDIRECTORY( InsightJournal )
+
 # Add plugins directories below
 ADD_SUBDIRECTORY( GaussianBlurImageFilter )
 ADD_SUBDIRECTORY( LaplacianOfGaussianFilter )
 ADD_SUBDIRECTORY( MedianImageFilter )
+ADD_SUBDIRECTORY( NoiseImageFilter )
