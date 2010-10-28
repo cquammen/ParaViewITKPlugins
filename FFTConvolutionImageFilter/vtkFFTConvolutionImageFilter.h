@@ -53,11 +53,18 @@ public:
   vtkTypeMacro(vtkFFTConvolutionImageFilter, vtkImageAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
+  // Set the convolution kernel image
   void SetKernelImage(vtkAlgorithmOutput* image);
+
+  // Set/get the image padding type
+  vtkSetMacro(PaddingMethod, int);
+  vtkGetMacro(PaddingMethod, int);
 
 protected:
   vtkFFTConvolutionImageFilter();
   ~vtkFFTConvolutionImageFilter();
+
+  int PaddingMethod;
 
   vtkImageExport*                VTKExporter;
   vtkImageExport*                VTKKernelExporter;
