@@ -1,0 +1,82 @@
+<ServerManagerConfiguration>
+  <!-- This is the server manager configuration XML. It defines the interface to
+       our new filter. As a rule of thumb, try to locate the configuration for
+       a filter already in ParaView (in Servers/ServerManager/Resources/*.xml)
+       that matches your filter and then model your xml on it -->
+  <ProxyGroup name="filters">
+   <SourceProxy name="FFTConvolutionImageFilter" class="vtkFFTConvolutionImageFilter" label="FFT Convolution Filter">
+     <Documentation
+        long_help="Compute the convolution of an image with a kernel."
+        short_help=".">
+          Put some text describing the filter here.
+     </Documentation>
+     <InputProperty
+        name="Input"
+        command="SetInputConnection">
+           <ProxyGroupDomain name="groups">
+             <Group name="sources"/>
+             <Group name="filters"/>
+           </ProxyGroupDomain>
+           <DataTypeDomain name="input_type">
+             <DataType value="vtkImageData"/>
+           </DataTypeDomain>
+      </InputProperty>
+     <InputProperty
+	name="Kernel"
+	command="SetKernelImage">
+       <ProxyGroupDomain name="groups">
+	 <Group name="sources"/>
+	 <Group name="filters"/>
+       </ProxyGroupDomain>
+       <DataTypeDomain name="input_type">
+	 <DataType value="vtkImageData"/>
+       </DataTypeDomain>
+       <Documentation>
+	 docs
+       </Documentation>
+     </InputProperty>
+
+     <!--
+     <IntVectorProperty
+        name="Noise Type"
+        command="SetNoiseType"
+        number_of_elements="1"
+        default_values="0" >
+       <EnumerationDomain name="enum">
+         <Entry value="0" text="Gaussian Noise"/>
+         <Entry value="1" text="Poisson Noise"/>
+       </EnumerationDomain>
+       <Documentation>
+         Choose which type of noise to add to the image.
+       </Documentation>
+     </IntVectorProperty>
+
+      <DoubleVectorProperty
+         name="Standard Deviation"
+         label="StandardDeviation"
+         command="SetStandardDeviation"
+         number_of_elements="1"
+         animateable="1"
+         default_values="1.0" >
+         <Documentation>
+           .
+         </Documentation>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="Mean"
+         label="Mean"
+         command="SetMean"
+         number_of_elements="1"
+         animateable="1"
+         default_values="0.0" >
+        <Documentation>
+           .
+         </Documentation>
+      </DoubleVectorProperty>
+      -->
+
+   <!-- End filter -->
+   </SourceProxy>
+ </ProxyGroup>
+</ServerManagerConfiguration>

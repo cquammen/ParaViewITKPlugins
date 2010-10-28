@@ -1,0 +1,37 @@
+digraph inheritence {
+
+edge [arrowhead = "empty"]
+
+node [shape = "record"]
+
+FFTPadImageFilter
+NormalizeToConstantImageFilter
+FFTWRealToComplexConjugateImageFilter
+FFTWComplexConjugateToRealImageFilter
+ClipImageFilter
+RegionFromReferenceImageFilter
+FFTConvolutionImageFilterBase
+FFTConvolutionImageFilter
+FFTWCommon
+FFTWLock
+
+ImageToImageFilter[color=grey]
+InPlaceImageFilter[color=grey]
+UnaryFunctorImageFilter[color=grey]
+/*FlipImageFilter[color=grey]*/
+/*FFTShiftImageFilter[color=grey]*/
+FFTRealToComplexConjugateImageFilter[color=grey]
+FFTComplexConjugateToRealImageFilter[color=grey]
+
+ImageToImageFilter->InPlaceImageFilter->UnaryFunctorImageFilter
+/*ImageToImageFilter->FlipImageFilter*/
+/*ImageToImageFilter->FFTShiftImageFilter*/
+
+ImageToImageFilter->NormalizeToConstantImageFilter
+UnaryFunctorImageFilter->ClipImageFilter
+ImageToImageFilter->RegionFromReferenceImageFilter
+ImageToImageFilter->FFTRealToComplexConjugateImageFilter->FFTWRealToComplexConjugateImageFilter
+ImageToImageFilter->FFTComplexConjugateToRealImageFilter->FFTWComplexConjugateToRealImageFilter
+ImageToImageFilter->FFTPadImageFilter->FFTConvolutionImageFilterBase->FFTConvolutionImageFilter
+
+}

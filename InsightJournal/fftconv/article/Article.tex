@@ -1,0 +1,553 @@
+%
+% Complete documentation on the extended LaTeX markup used for Insight
+% documentation is available in ``Documenting Insight'', which is part
+% of the standard documentation for Insight.  It may be found online
+% at:
+%
+%     http://www.itk.org/
+
+\documentclass{InsightArticle}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  hyperref should be the last package to be loaded.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[dvips,
+bookmarks,
+bookmarksopen,
+backref,
+colorlinks,linkcolor={blue},citecolor={blue},urlcolor={blue},
+]{hyperref}
+% to be able to use options in graphics
+\usepackage{graphicx}
+% for pseudo code
+\usepackage{listings}
+% subfigures
+\usepackage{subfigure}
+\usepackage{pseudocode}
+
+
+%  This is a template for Papers to the Insight Journal. 
+%  It is comparable to a technical report format.
+
+% The title should be descriptive enough for people to be able to find
+% the relevant document. 
+\title{FFT based convolution}
+
+% 
+% NOTE: This is the last number of the "handle" URL that 
+% The Insight Journal assigns to your paper as part of the
+% submission process. Please replace the number "1338" with
+% the actual handle number that you get assigned.
+%
+\newcommand{\IJhandlerIDnumber}{3154}
+
+% Increment the release number whenever significant changes are made.
+% The author and/or editor can define 'significant' however they like.
+% \release{0.00}
+
+% At minimum, give your name and an email address.  You can include a
+% snail-mail address if you like.
+\author{Ga\"etan Lehmann}
+\authoraddress{{$^1$}INRA, UMR 1198; ENVA; CNRS, FRE 2857, Biologie du
+D\'eveloppement et 
+Reproduction, Jouy en Josas, F-78350, France.}
+
+\begin{document}
+
+
+%
+% Add hyperlink to the web location and license of the paper.
+% The argument of this command is the handler identifier given
+% by the Insight Journal to this paper.
+% 
+\IJhandlefooter{\IJhandlerIDnumber}
+
+\maketitle
+
+\ifhtml
+\chapter*{Front Matter\label{front}}
+\fi
+
+
+\begin{abstract}
+\noindent
+
+The Fourier transform of the convolution of two images is equal to the product of their
+Fourier transforms. With this definition, it is possible to create a convolution filter
+based on the Fast Fourier Transform (FFT). The interesting complexity characteristics of
+this transform give a very efficient convolution filter for large kernel images.
+
+This paper provides such a filter, as well as a detailed description of the implementation
+choices and a performance comparison with the "simple" itk::ConvolutionImageFilter.
+
+\end{abstract}
+
+\IJhandlenote{\IJhandlerIDnumber}
+
+\tableofcontents
+
+\section{Introduction}
+
+The convolution of two images is a very cpu demanding task, with a complexity of $O(N \times M)$ where $N$ is
+the number of pixels of the first image and $M$ the number of pixels of the second. Usually, the size
+of one of the images is much smaller than the one of the other; the smaller image is often called the
+kernel. The relatively small size of the kernel makes the convolution computable in a reasonable time,
+but when the size of the kernel grows, the computation times quickly become impractical.
+
+Fortunately, the convolution of two images is simply the product of those two images pixel wise in
+the frequency domain, with a complexity of $O(max(N, M))$. The size of the kernel, which is usually
+way smaller than the image, has no effect on the computation time, so the complexity is simply $O(N)$.
+The cost of the Fourier Transform
+can be quite high however -- that's why the FFT based convolution is more efficient only for large
+kernel images.
+
+\section{FFT based convolution step by step}
+
+The FFT based convolution requires several steps to be performed. They are detailed here one by one.
+
+\subsection{Padding}
+
+The image to convolve and the kernel image will be padded for several reasons:
+\begin{itemize}
+  \item to make their sizes match. This is required to perform multiplication in the frequency
+  domain.
+  \item  to avoid border effects. Because the FFT considers the image as a cyclic signal, the
+  image must be padded to avoid border effects. The final image size for all the dimensions
+  must be at least $P+Q-1$, where $P$ is the size of the first image in a dimension and $Q$ the size
+  of the other image in the same dimension.
+  \item to make the FFT possible, or to enhance its performance. Some FFT implementations, like that in
+  VNL, can only be run on an image where the size of all the dimensions are powers of two.
+  Some other implementations, like that of FFTW, perform very differently depending on the
+  size of the image. Adding a few more pixels on the border of the image can lead them to perform
+  significantly better, as shown in chapter \ref{perf:gpf}.
+\end{itemize}
+
+The kernel is always padded with zeros, but the image to convolve can be padded in several ways:
+\begin{itemize}
+ \item zeros -- while simple, this method may produce a darkened border in the convolved image;
+ \item zero flux Neumann -- this method extends the pixels on the image border in the padded zone, and
+       is quite efficient in keeping the border effect low;
+ \item mirror -- the image is padded with a mirror of the image. This is also a good way to
+       keep the border effect low;
+ \item wrap -- the opposite border of the image is copied in the padded zone. This may be useful to
+       keep the circular behavior of the FFT, while still padding to fit the size requirement of the
+       FFT implementation.
+\end{itemize}
+The result of these paddings can be seen in figure \ref{fig:padding}.
+
+\begin{figure}[htbp]
+\begin{center}
+\subfigure[Zero]{\includegraphics[scale=0.4]{pad-image-2}}
+\subfigure[Zero flux Neumann]{\includegraphics[scale=0.4]{pad-image-zero-flux}}
+\subfigure[Mirror]{\includegraphics[scale=0.4]{pad-image-mirror}}
+\subfigure[Wrap]{\includegraphics[scale=0.4]{pad-image-wrap}}
+\subfigure[Input image]{\includegraphics[scale=0.4]{cthead1}}
+\caption{Padding a 256 $\times$ 256 image to a 512 $\times$ 512 one in several ways.\label{fig:padding}}
+\end{center}
+\end{figure}
+
+
+\subsection{Normalization}
+
+To preserve the intensity of the pixels in the convolved image, the kernel must be normalized to one
+-- the sum of all its pixels is one.
+
+\subsection{Flipping}
+
+The convolution is by nature a flipping transform: the shape of the kernel image can be found in the
+convolved image, but flipped on all the axes. To get the same behavior when computing the product
+in the frequency domain, the kernel image must be flipped prior to the FFT. See figure \ref{fig:kernel-modifications}.
+
+\begin{figure}[htbp]
+\begin{center}
+\subfigure[Input image (scaled 20 times)]{\includegraphics[scale=8]{kernel}}
+\subfigure[Zero padded]{\includegraphics[scale=0.4]{pad-kernel-2}}
+\subfigure[Zero padded and flipped]{\includegraphics[scale=0.4]{kernel-pad-flip}}
+\subfigure[Zero padded, flipped and shifted]{\includegraphics[scale=0.4]{kernel-pad-flip-shift}}
+\caption{Kernel modifications in order to perform the FFT based convolution. Normalization is
+only a change in intensity, and thus is not shown here.\label{fig:kernel-modifications}}
+\end{center}
+\end{figure}
+
+\subsection{Shifting (centering)}
+
+The convolution is usually performed with a centered kernel. If the kernel is not centered, the input image
+is shifted in the convolved image, by the same shift than the shift of the kernel. However, for the
+FFT, the center pixel is the one in the corner, not the one in the center of the image, as is intuitive
+for a human. To avoid a shift in the convolved image, the pixels must be shifted to the corner
+of the image as expeced by the FFT. See figure \ref{fig:kernel-modifications}.
+
+This shift must be done after the padding, and before the FFT.
+
+Another option, not used here, is to shift the image after the inverse Fourier transform.
+
+\subsection{Fourier transform}
+
+The Fourier transform is performed on the padded input image, and on the normalized, padded, flipped
+and shifted kernel.
+
+\subsection{Frequency domain multiplication}
+
+The convolution is performed in the frequency domain, simply by computing the product of the FFT of
+the image and the FFT of the kernel, pixel wise.
+
+\subsection{Inverse Fourier transform}
+
+The convolved image in the frequency domain is transformed to the space domain with an inverse Fourier
+transform. See figure \ref{fig:image-modifications}.
+
+\begin{figure}[htbp]
+\begin{center}
+\subfigure[Input image]{\includegraphics[scale=0.4]{cthead1}}
+\subfigure[Zero flux Neumann padded]{\includegraphics[scale=0.4]{pad-image-zero-flux}}
+\subfigure[Convolved, still padded]{\includegraphics[scale=0.4]{image-pad-convolved}}
+\subfigure[Cropped to the input image size]{\includegraphics[scale=0.4]{fftconv}}
+\caption{The modifications applied to the input image.\label{fig:image-modifications}}
+\end{center}
+\end{figure}
+
+\subsection{Clipping}
+
+Because of the numerical precision used in the FFT transforms, the values can sometime be greater or
+smaller than the possible values of the output image.
+The values are clipped to fit in the range of possible values of the output image.
+
+\subsection{Cropping}
+
+The image is cropped to fit the size of the input image. See figure \ref{fig:image-modifications}.
+
+\section{Implementation}
+
+The step by step transform described in the previous chapter can perfectly be implemented in a pure
+ITK pipeline model. The few filters which were missing for this task have been implemented, and some
+other have been enhanced to improve their performance.
+
+\subsection{NormalizeToConstantImageFilter}
+
+The normalization to unity cannot be done without going outside of the ITK pipeline model at this time.
+itk::NormalizeToConstantImageFilter has been added for this task.
+
+This filter is implemented as a minipipeline of two filters:
+\begin{itemize}
+  \item a itk::StatisticsImageFilter, to compute the sum of the pixels in the image;
+  \item a itk::DivideByConstantImageFilter, to actually normalize the pixel values.
+\end{itemize}
+The use of itk::StatisticsImageFilter only to compute the sum might be {\em a little overkill}. This filter
+is only used on the kernel, which is usually quite small, so the performance impact on the whole
+FFT based convolution is small.
+
+\subsection{ZeroFluxNeumannPadImageFilter}
+
+The zero flux Neumann padding filter was not implemented in ITK. It has been implemented by modifying
+the \verb$ConstantPadImageFilter$ code.
+
+\subsection{FFTPadImageFilter}
+
+The padding step, as described in the previous chapter, has several goals, which lead to a single
+image size used to pad both the input image and the kernel.
+All the logic is implemented in \verb$itk::FFTPadImageFilter$.
+
+This filter is in charge of padding both images. It requires two inputs: the image to convolve and
+the kernel. The pad size is computed according to both image sizes.
+
+The image to convolve is simply padded with one of the available method: zeros, zero flux Neumann, mirror
+or wrap.
+
+The kernel, however, requires a little more work to be
+centered in the padded image, and to make its region match that of the padded image to be convolved.
+The padding and the region changes are implemented as a minipipeline of \verb$itk::ConstantPadImageFilter$ and
+\verb$itk::ChangeInformationImageFilter$.
+
+\verb$itk::FFTPadImageFilter$ is also able to extend the padded region in order to enhance the FFT
+performance, or to make it possible when the FFT method requires a size which is a power of
+two. FFTW is able to work on any image size, but due to the algorithms used, it is significantly faster
+with some specific image sizes. The two main reasons are:
+\begin{itemize}
+  \item the decomposition of images of composite sizes in smaller transforms using the
+  Cooley-Tukey algorithm;
+  \item the hard coded loop unrolling for the sizes which are prime numbers up to thirteen.
+\end{itemize}
+For these reasons, FFTW performs better when the size of each dimension has its greatest prime
+factor smaller or equal to thirteen.
+The greatest prime factor can be computed easily with the algorithm described in algorithm \ref{greatestPrimeFactor}.
+
+\begin{pseudocode}{isPrime}{n}
+\FOREACH x \in [2, \sqrt{n}] \DO 
+\BEGIN
+  \IF n \% x = 0 \THEN \RETURN \FALSE \\
+\END \\
+\RETURN \TRUE
+\end{pseudocode}
+
+\begin{pseudocode}{greatestPrimeFactor}{n}
+\label{greatestPrimeFactor}
+x \GETS 2 \\
+\WHILE x \leq n \DO
+\BEGIN
+  \IF n \bmod x = 0 \AND \CALL{isPrime}{x}
+  \THEN
+    n \GETS n / x
+  \ELSE
+    v \GETS v + 1
+\END \\
+\RETURN x
+\end{pseudocode}
+
+\verb$FFTPadImageFilter$ can also be used with a single input. This is useful for running a FFT
+on an image with a size which is not a power of 2 with the vnl implementation, or to enhance the performance
+of the FFTW implementation, without necessairly doing a convolution later.
+
+\subsection{FFTW filters enhancements}
+
+ITK provides FFT and inverse FFT filters based on the FFTW library. Those filters had some problems,
+or were missing some features. They have been enhanced to fit the needs of the FFT based convolution.
+
+\subsubsection{Thread support}
+The FFTW filters were not multithreaded. There are two places where multithreading can take place: the
+FFTW execution and the normalization step.
+
+The FFTW execution can be threaded simply by calling \verb$fftwf_plan_with_nthreads(threads);$ or 
+\verb$fftwf_plan_with_nthreads(threads);$, depending on the pixel type, before creating the plan. 
+\verb$itk::fftw::Proxy$ has been modified to provide this feature: an extra \verb$thread$ parameter,
+has been added to the method in charge of creating the plans. This defaults
+to $1$ to preserve backwards compatibility.
+Further, the \verb$itk::FFTWComplexConjugateToRealImageFilter$ and
+\verb$itk::FFTWRealToComplexConjugateImageFilter$ have
+been modified to pass their user defined number of threads to those methods.
+
+In order to implement the threading support in the normalization step in 
+\verb$itk::FFTWComplexConjugateToRealImageFilter$, the execution of the FFTW library has been moved to 
+\verb$BeforeThreadedGenerateData()$, and the normalization step to \verb$ThreadedGenerateData()$.
+
+\subsubsection{Memory usage reduction}
+
+FFTW filters were using a lot of memory, because they were allocating an internal buffer for the input 
+image, and another for the output image. Worse, these buffers were not deallocated at the end of
+the execution filter, keeping the memory usage very high even when the execution has completed.
+
+One supposes the main reasons to do that were:
+\begin{itemize}
+  \item avoid the destruction of the input. The creation of the FFTW plan, and the execution of FFTW 
+  can destroy the input. This is not acceptable most of the time in ITK.
+  \item reuse the FFTW plan for a latter run. The plan includes the memory location of the input and output
+  buffers, so the buffers can't be deallocated, as may be the case with the filter's input and output images.
+\end{itemize}
+
+The destruction of the input can be avoided in the creation plan by using the \verb$FFTW_ESTIMATE$ flag
+-- that flag was already used in the implementation. It can also be avoided while running FFTW, for 
+the real to complex transform, by also using the flag \verb$FFTW_PRESERVE_INPUT$. So in 
+\verb$itk::FFTWRealToComplexConjugateImageFilter$, if the right flags are used, there is no need for
+the input buffer.
+The case is
+more difficult for the complex to real transform: FFTW does not provide any algorithm able to preserve
+the input, so the input must be copied to an internal buffer. There is a case however, when one does not
+care about destroying the input in ITK: when the \verb$ReleaseDataFlag$ is \verb$ON$ on the input of the filter.
+In that case, the input will be deallocated right after the end of the execution of the filter, and so
+there is no need to take care of the input: it can be destroyed by the filter, and then deallocated.
+\verb$itk::FFTWRealToComplexConjugateImageFilter$ has been modified to use the input image directly without an
+intermediate buffer when \verb$ReleaseDataFlag$ is \verb$ON$. The detection of the \verb$ReleaseDataFlag$
+is somewhat difficult during the pipeline 
+execution: this flag is always modified to \verb$OFF$ before the call to \verb$GenerateData()$ to avoid
+destruction by a minipipeline. In consequence, the detection of the \verb$ReleaseDataFlag$ is done at an 
+earlier stage in the pipeline execution, in \verb$UpdateOutputData()$, and stored in a member variable:
+\verb$m_CanUseDestructiveAlgorithm$.
+
+The later reuse of the plan, while sensible when not using the \verb$FFTW_ESTIMATE$ flag, is of little practical use
+since the time needed to create the plan is very short; much shorter than the
+FFT computation. Also, the number of threads and the image size are stored in the plan, and can't be 
+changed later, which doesn't fit well with ITK pipeline model. In the enhanced version, the plan is
+not kept between the filters execution, and so no intermediate output buffers are used,
+significantly decreasing memory requirements.
+
+Another reason to create the internal buffer may be the need to properly align the image, to significantly
+improve the FFTW performance by using SIMD operations of the CPU. The buffers were simply allocated with the
+\verb$new$ operator, which is not enough to ensure a proper alignment
+on some plateforms, including Microsoft Windows and Linux.
+
+
+\subsubsection{Code safety}
+
+Only \verb$fftwf_execute(plan);$ and \verb$fftw_execute(plan);$ are thread safe in FFTW -- the other functions
+are not thread safe. As a consequence, calls to all the other functions have been protected by a 
+global lock in the enhanced classes.
+
+Also, image size checking to know if the plan can be reused may not have been safe,
+since it was testing the number of pixels rather than the size of all the dimensions. 
+With the changes already made in this classes for other reasons, the plan is no longer kept
+between successive executions, so this is no longer a problem.
+
+\subsubsection{Plan optimization}
+
+The ITK classes have been modified in order to create optimized FFTW plan. Because the computation
+of the optimized plan can take a lot of time, the default is still \verb$ESTIMATE$.
+
+The optimization level can be changed globally only at this time, with the method
+\verb$itk::FFTWLock::SetGlobalOptimizationLevel()$, or by setting the environment variable
+\verb$ITK_FFTW_OPTIMIZATION_LEVEL$.
+
+\subsubsection{Wisdom integration}
+
+The optimized plans are automatically loaded and saved from/in the files \verb$~/itkwisdomf$ and \verb$~/itkwisdom$,
+or in the file name stored in the environment variable \verb$ITK_FFTW_WISDOM _FILE_BASE_NAME$ if this
+variable exists.
+They are saved automatically when the program exits, and can also be saved with some dedicated methods
+in \verb$itk::FFTWLock$.
+
+\subsection{ClipImageFilter}
+
+\verb$itk::ClipImageFilter$ is a filter very similar to \verb$itk::CastImageFilter$ excepted that it
+take cares to clip the too small or to great values, instead of simply casting them in the output
+pixel type.
+
+As \verb$itk::CastImageFilter$, it is able to process zero pixel if the output and the input are of the
+same type and the filter can be run in place.
+
+\subsection{RegionFromReferenceImageFilter}
+
+At the end of the convolution, the image is cropped to return it to the size of the input image. Again,
+there is currently no option in ITK to do that fully within the pipeline model. Consequently, a new
+filter has been developped for this task.
+
+\verb$itk::RegionFromReferenceImageFilter$ is implemented as a subclass of \verb$itk::ExtractImageFilter$.
+This filter requires two inputs -- the first is the image to crop, the second is simply used to get 
+the region to extract in the first one. The reference image, the second input, is simply expected to
+be of type \verb$itk::ImageBase$ with the same dimensionality as the first, and so it's type does not
+need to be specified in the template parameters.
+
+\subsection{FFTConvolutionImageFilterBase}
+
+\verb$itk::FFTConvolutionImageFilter$ is the base class to use for all the FFT based convolution transforms. It
+contains several methods designed to make easier the implementation of the FFT based convolution filters. There
+are 
+\begin{itemize}
+ \item several kind of methods to prepare the input image and kernel;
+ \item a method to register the progress of some additional filters;
+ \item an easy access to the padded region and the oddity of the size on the x axis;
+ \item several kind of methods to produce the output.
+\end{itemize}
+
+It is implemented as a subclass of \verb$itk::FFTPadImageFilter$ to expose the padding options and avoid
+code duplication.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.35]{inheritance}
+\caption{New and modified classes inheritances.\label{fig:conv-pipeline}}
+\end{figure}
+
+\subsection{FFTConvolutionImageFilter}
+
+\verb$itk::FFTConvolutionImageFilter$ is a convenient minipipeline filter which groups all the required
+filters to perform the FFT based convolution in a single, easy to use filter. See figure \ref{fig:conv-pipeline}
+for an overview of the minipipeline.
+\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.5]{conv}
+\caption{Internal pipeline of FFTConvolutionImageFilter. MultiplyImageFilter is the only filter created in
+FFTConvolutionImageFilter -- the others are created in FFTConvolutionImageFilterBase.\label{fig:conv-pipeline}}
+\end{figure}
+
+It is based on \verb$itk::FFTConvolutionImageFilter$.
+
+It sets the \verb$ReleaseDataFlag$ properly to keep the memory usage as low as possible, and propagates the
+user specified number of threads.
+
+Finally, the \verb$Normalize$ attribute lets the user choose if the kernel must be normalized to one
+or not.
+
+\section{Performance}
+
+All the performance tests were run on a workstation with two Intel(R) Xeon(R) CPU X5570 at 2.93GHz
+and 24 GB of RAM and running Mandriva Linux 2009.1. This system has 8 cores and is able to physically
+run 16 threads at the same time.
+
+\subsection{Kernel size}
+
+As visible in figure \ref{fig:perf-kernel}, the kernel size as a little effect on the execution time
+for the FFT based convolution, but a quite big impact on the spatial domain convolution method.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{perf2D}
+\caption{The effect of the kernel size on the execution time. The input image size is $256 \times 256$.
+\label{fig:perf-kernel}}
+\end{figure}
+
+The drop in performance at some times seems to be due to a suboptimal plan generated by FFTW with \verb$FFTW_ESTIMATE$.
+Using FFTW's wisdom feature can almost remove that problem. An integration of wisdom in ITK's FFTW
+filters will be proposed in a later contribution.
+
+\subsection{Greatest prime factor}
+\label{perf:gpf}
+As visible in figure \ref{fig:perf-fftw3}, the FFTW library performs quite differently depending on the
+size of the input. A good way to optimise performance appears to be use of image sizes having a greatest
+prime factor smaller or equal to 13.
+
+Most of the time, and despite the usual advice to use a size which is a power of two,
+those sizes perform significantly better than the closest sizes which are a power of two, probably
+because the performance gain per pixel doesn't compensate for the higher number of pixels in the image.
+
+\begin{figure}[htbp]
+\begin{center}
+\subfigure[Execution time for an image of size $dim^{3}$.]{\includegraphics[scale=0.7]{fftw3-time-dim}}
+\subfigure[Effect of the image greatest prime factor of the image size (gpf) on the number of pixels
+ processed per seconds (ops).]{\includegraphics[scale=0.7]{fftw3-ops-gpf}}
+\caption{Effect of the image size on the FFTW performance. Red dots are the sizes with a greatest prime
+factor smaller or equal to 13. The grey dots are the ones with a greatest prime factor greater than 13.
+\label{fig:perf-fftw3}}
+\end{center}
+\end{figure}
+
+\subsection{Number of threads}
+
+As is visible in figure \ref{fig:perf-kernel}, the FFT based and spatial domain convolutions both scale
+well with the number of threads.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{perf_threads}
+\caption{The effect of the number of threads on the execution time. The input image size is
+$371 \times 371 \times 34$, and the kernel size is two.
+\label{fig:perf-kernel}}
+\end{figure}
+
+\section{Wrapping}
+
+All the new filters have been wrapped using WrapITK.
+
+\section{Development version}
+
+A development version is available in a darcs repository at
+\url{http://mima2.jouy.inra.fr/darcs/contrib-itk/fftconv/}.
+
+\section{Acknowledgments}
+
+I'm grateful to Dan White for its corrections and useful comments on this article.
+
+\section{Conclusion}
+
+This contribution provides an efficient implementation of the convolution transform for large kernels.
+The FFTW filter implementations have been significantly enhanced, and a set of reusable tools is provided.
+
+Some other work may be done on this basis. An non exhaustive list includes:
+\begin{itemize}
+ \item binary erosion/dilation filters based on FFT;
+ \item a set of deconvolution filters;
+ \item a more memory efficient implementation of the convolution filter using the Overlap-Save algorithm;
+ \item integrate FFTW's wisdom to improve FFT performance in ITK.
+\end{itemize}
+
+
+\appendix
+
+
+
+\bibliographystyle{plain}
+\bibliography{InsightJournal}
+\nocite{ITKSoftwareGuide}
+
+\end{document}
+

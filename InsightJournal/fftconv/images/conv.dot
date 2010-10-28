@@ -1,0 +1,32 @@
+digraph FFTConvolutionImageFilter {
+
+KernelImage[shape=box, color=orange, label="kernel"]
+InputImage[shape=box, color=green, label="input image"]
+ConvolvedImage[shape=box, color=red, label="convolved image"]
+
+{rank=same; InputImage KernelImage}
+
+FlipImageFilter
+FFTPadImageFilter
+NormalizeToConstantImageFilter
+/* CastImageFilter */
+FFTShiftImageFilter
+FFTRealToComplexConjugateImageFilter1[label=FFTRealToComplexConjugateImageFilter]
+FFTRealToComplexConjugateImageFilter2[label=FFTRealToComplexConjugateImageFilter]
+MultiplyImageFilter
+FFTComplexConjugateToRealImageFilter
+RegionFromReferenceImageFilter
+
+{rank=same; FFTRealToComplexConjugateImageFilter1 FFTRealToComplexConjugateImageFilter2}
+
+
+InputImage->FFTPadImageFilter->FFTRealToComplexConjugateImageFilter1->MultiplyImageFilter[color=green]
+
+KernelImage->NormalizeToConstantImageFilter->FFTPadImageFilter->FlipImageFilter->FFTShiftImageFilter->FFTRealToComplexConjugateImageFilter2->MultiplyImageFilter[color=orange]
+/* KernelImage->CastImageFilter->FFTPadImageFilter[color=orange] */
+
+MultiplyImageFilter->FFTComplexConjugateToRealImageFilter->ClipImageFilter->RegionFromReferenceImageFilter->ConvolvedImage[color=red]
+InputImage->RegionFromReferenceImageFilter[color=green, constraint=false]
+
+
+}
