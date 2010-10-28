@@ -27,8 +27,12 @@ FIND_PACKAGE(FFTW REQUIRED)
 ADD_SUBDIRECTORY( InsightJournal )
 
 # Add plugins directories below
-ADD_SUBDIRECTORY( FFTConvolutionImageFilter )
 ADD_SUBDIRECTORY( GaussianBlurImageFilter )
 ADD_SUBDIRECTORY( LaplacianOfGaussianFilter )
 ADD_SUBDIRECTORY( MedianImageFilter )
 ADD_SUBDIRECTORY( NoiseImageFilter )
+
+# This plugin does not currently compile on Windows
+IF( NOT WIN32 )
+  ADD_SUBDIRECTORY( FFTConvolutionImageFilter )
+ENDIF( NOT WIN32 )
