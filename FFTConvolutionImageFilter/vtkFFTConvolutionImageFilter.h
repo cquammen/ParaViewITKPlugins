@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Visualization Toolkit
-  Module:    vtkNoiseImageFilter.h
+  Module:    vtkFFTConvolutionImageFilter.h
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
@@ -12,7 +12,7 @@
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
-// .NAME vtkNoiseImageFilter - peforms Gaussian blurring of an input image
+// .NAME vtkFFTConvolutionImageFilter - peforms Gaussian blurring of an input image
 // .SECTION Description
 // vtkMyImageShiftFilter is a filter to generate scalar values from a
 // dataset.  The scalar values lie within a user specified range, and
@@ -20,20 +20,19 @@
 // a line. The line can be oriented arbitrarily. A typical example is
 // to generate scalars based on elevation or height above a plane.
 
-#ifndef __vtkNoiseImageFilter_h
-#define __vtkNoiseImageFilter_h
+#ifndef __vtkFFTConvolutionImageFilter_h
+#define __vtkFFTConvolutionImageFilter_h
 
 #include <vtkImageAlgorithm.h>
 
 #include <itkVTKImageImport.h>
 #include <itkVTKImageExport.h>
-#include <itkAdditiveGaussianNoiseImageFilter.h>
-#include <itkShotNoiseImageFilter.h>
+#include <itkFFTConvolutionImageFilter.h>
 
 class vtkImageExport;
 class vtkImageImport;
 
-class VTK_EXPORT vtkNoiseImageFilter : public vtkImageAlgorithm
+class VTK_EXPORT vtkFFTConvolutionImageFilter : public vtkImageAlgorithm
 {
 public:
 
@@ -46,56 +45,37 @@ public:
     ITKImageImportType;
   typedef itk::VTKImageExport< ITKImageType >
     ITKImageExportType;
-  typedef itk::AdditiveGaussianNoiseImageFilter< ITKImageType, ITKImageType >
-    ITKGaussianNoiseFilterType;
-  typedef itk::ShotNoiseImageFilter< ITKImageType, ITKImageType >
-    ITKPoissonNoiseFilterType;
-
-  enum {
-    GAUSSIAN_NOISE = 0,
-    POISSON_NOISE  = 1
-  };
+  typedef itk::FFTConvolutionImageFilter< ITKImageType, ITKImageType, ITKImageType >
+    ITKFFTConvolutionFilterType;
   //ETX
 
-  static vtkNoiseImageFilter* New();
-  vtkTypeMacro(vtkNoiseImageFilter, vtkImageAlgorithm);
+  static vtkFFTConvolutionImageFilter* New();
+  vtkTypeMacro(vtkFFTConvolutionImageFilter, vtkImageAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  // Set/get the noise type
-  vtkSetMacro(NoiseType, int);
-  vtkGetMacro(NoiseType, int);
-
-  // Set/get the mean for additive Gaussian noise.
-  vtkSetMacro(Mean, double);
-  vtkGetMacro(Mean, double);
-
-  // Set/get the standard deviation for additive Gaussian noise.
-  vtkSetMacro(StandardDeviation, double);
-  vtkGetMacro(StandardDeviation, double);
+  void SetKernelImage(vtkAlgorithmOutput* image);
 
 protected:
-  vtkNoiseImageFilter();
-  ~vtkNoiseImageFilter();
-
-  int NoiseType;
-
-  double Mean;
-  double StandardDeviation;
+  vtkFFTConvolutionImageFilter();
+  ~vtkFFTConvolutionImageFilter();
 
   vtkImageExport*                VTKExporter;
+  vtkImageExport*                VTKKernelExporter;
   //BTX
-  ITKImageImportType::Pointer         ITKImporter;
-  ITKGaussianNoiseFilterType::Pointer GaussianNoiseFilter;
-  ITKPoissonNoiseFilterType::Pointer  PoissonNoiseFilter;
-  ITKImageExportType::Pointer         ITKExporter;
+  ITKImageImportType::Pointer          ITKImporter;
+  ITKImageImportType::Pointer          ITKKernelImporter;
+  ITKFFTConvolutionFilterType::Pointer ITKConvolutionFilter;
+  ITKImageExportType::Pointer          ITKExporter;
   //ETX
   vtkImageImport*                VTKImporter;
 
 protected:
-  void InitializeITKImporter();
+  void InitializeITKImporters();
   void InitializeITKExporter();
 
   int RequestData(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector);
+
+  int FillInputPortInformation(int port, vtkInformation *info);
 
   //BTX
   template <class T>
@@ -103,8 +83,8 @@ protected:
   //ETX
 
 private:
-  vtkNoiseImageFilter(const vtkNoiseImageFilter&);  // Not implemented.
-  void operator=(const vtkNoiseImageFilter&);  // Not implemented.
+  vtkFFTConvolutionImageFilter(const vtkFFTConvolutionImageFilter&);  // Not implemented.
+  void operator=(const vtkFFTConvolutionImageFilter&);  // Not implemented.
 };
 
 #endif

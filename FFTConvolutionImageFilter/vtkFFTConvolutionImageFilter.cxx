@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Visualization Toolkit
-  Module:    vtkNoiseImageFilter.cxx
+  Module:    vtkFFTConvolutionImageFilter.cxx
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
@@ -12,7 +12,7 @@
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
-#include "vtkNoiseImageFilter.h"
+#include "vtkFFTConvolutionImageFilter.h"
 
 #include "vtkObjectFactory.h"
 #include "vtkImageExport.h"
@@ -22,44 +22,59 @@
 #include "vtkInformation.h"
 #include "vtkImageShiftScale.h"
 
-// Warning: this is really a hack to avoid creating a library just for
-// the following class.
-#include "itkThreadSafeMersenneTwisterRandomVariateGenerator.cxx"
+#include "itkFFTConvolutionImageFilter.h"
+
+// Warning: this is a hack!
+#include "itkFFTWLock.cxx"
 
 
-vtkStandardNewMacro(vtkNoiseImageFilter);
+vtkStandardNewMacro(vtkFFTConvolutionImageFilter);
 
 //----------------------------------------------------------------------------
-vtkNoiseImageFilter::vtkNoiseImageFilter()
+vtkFFTConvolutionImageFilter::vtkFFTConvolutionImageFilter()
 {
-  this->NoiseType = GAUSSIAN_NOISE;
-  this->VTKExporter = vtkImageExport::New();
-  this->ITKImporter = ITKImageImportType::New();
-  this->GaussianNoiseFilter = ITKGaussianNoiseFilterType::New();
-  this->PoissonNoiseFilter  = ITKPoissonNoiseFilterType::New();
-  this->ITKExporter = ITKImageExportType::New();
-  this->VTKImporter = vtkImageImport::New();
+  this->SetNumberOfInputPorts(2);
+  this->SetNumberOfOutputPorts(1);
 
-  this->InitializeITKImporter();
+  this->VTKExporter          = vtkImageExport::New();
+  this->VTKKernelExporter    = vtkImageExport::New();
+  this->ITKImporter          = ITKImageImportType::New();
+  this->ITKKernelImporter    = ITKImageImportType::New();
+  this->ITKConvolutionFilter = ITKFFTConvolutionFilterType::New();
+  this->ITKExporter          = ITKImageExportType::New();
+  this->VTKImporter          = vtkImageImport::New();
+
+  this->InitializeITKImporters();
   this->InitializeITKExporter();
 }
 
 //----------------------------------------------------------------------------
-vtkNoiseImageFilter::~vtkNoiseImageFilter()
+vtkFFTConvolutionImageFilter::~vtkFFTConvolutionImageFilter()
 {
   if (this->VTKExporter)
     {
-      this->VTKExporter->Delete();
+    this->VTKExporter->Delete();
+    }
+
+  if (this->VTKKernelExporter)
+    {
+    this->VTKKernelExporter->Delete();
     }
 
   if (this->VTKImporter)
     {
-      this->VTKImporter->Delete();
+    this->VTKImporter->Delete();
     }
 }
 
 //----------------------------------------------------------------------------
-void vtkNoiseImageFilter::InitializeITKImporter()
+void vtkFFTConvolutionImageFilter::SetKernelImage(vtkAlgorithmOutput* image)
+{
+  this->SetInputConnection(1, image);
+}
+
+//----------------------------------------------------------------------------
+void vtkFFTConvolutionImageFilter::InitializeITKImporters()
 {
   // This call takes the place of the usual SetInput() method.
   this->ITKImporter->SetCallbackUserData(this->VTKExporter);
@@ -76,10 +91,26 @@ void vtkNoiseImageFilter::InitializeITKImporter()
   this->ITKImporter->SetUpdateDataCallback(this->VTKExporter->GetUpdateDataCallback());
   this->ITKImporter->SetUpdateInformationCallback(this->VTKExporter->GetUpdateInformationCallback());
   this->ITKImporter->SetWholeExtentCallback(this->VTKExporter->GetWholeExtentCallback());
+
+  // This call takes the place of the usual SetInput() method.
+  this->ITKKernelImporter->SetCallbackUserData(this->VTKKernelExporter);
+
+  // Set the rest of the callbacks
+  this->ITKKernelImporter->SetBufferPointerCallback(this->VTKKernelExporter->GetBufferPointerCallback());
+  this->ITKKernelImporter->SetDataExtentCallback(this->VTKKernelExporter->GetDataExtentCallback());
+  this->ITKKernelImporter->SetOriginCallback(this->VTKKernelExporter->GetOriginCallback());
+  this->ITKKernelImporter->SetSpacingCallback(this->VTKKernelExporter->GetSpacingCallback());
+  this->ITKKernelImporter->SetNumberOfComponentsCallback(this->VTKKernelExporter->GetNumberOfComponentsCallback());
+  this->ITKKernelImporter->SetPipelineModifiedCallback(this->VTKKernelExporter->GetPipelineModifiedCallback());
+  this->ITKKernelImporter->SetPropagateUpdateExtentCallback(this->VTKKernelExporter->GetPropagateUpdateExtentCallback());
+  this->ITKKernelImporter->SetScalarTypeCallback(this->VTKKernelExporter->GetScalarTypeCallback());
+  this->ITKKernelImporter->SetUpdateDataCallback(this->VTKKernelExporter->GetUpdateDataCallback());
+  this->ITKKernelImporter->SetUpdateInformationCallback(this->VTKKernelExporter->GetUpdateInformationCallback());
+  this->ITKKernelImporter->SetWholeExtentCallback(this->VTKKernelExporter->GetWholeExtentCallback());
 }
 
 //----------------------------------------------------------------------------
-void vtkNoiseImageFilter::InitializeITKExporter()
+void vtkFFTConvolutionImageFilter::InitializeITKExporter()
 {
   // This call takes the place of the usual SetInput() method.
   this->VTKImporter->SetCallbackUserData(ITKExporter->GetCallbackUserData());
@@ -99,7 +130,7 @@ void vtkNoiseImageFilter::InitializeITKExporter()
 }
 
 //----------------------------------------------------------------------------
-int vtkNoiseImageFilter::RequestData(vtkInformation *request,
+int vtkFFTConvolutionImageFilter::RequestData(vtkInformation *request,
 					    vtkInformationVector **inputVector,
 					    vtkInformationVector *outputVector)
 {
@@ -108,39 +139,39 @@ int vtkNoiseImageFilter::RequestData(vtkInformation *request,
     (inInfo->Get(vtkDataObject::DATA_OBJECT()));
   if(!input)
     {
-      vtkErrorMacro("Output is not of type vtkImageData");
-      return 0;
+    vtkErrorMacro("Input is not of type vtkImageData");
+    return 0;
+    }
+  vtkInformation *kernelInfo = inputVector[1]->GetInformationObject(0);
+  vtkImageData *kernelInput = vtkImageData::SafeDownCast
+    (kernelInfo->Get(vtkDataObject::DATA_OBJECT()));
+  if (!kernelInfo)
+    {
+    vtkErrorMacro("Kernel is not of type vtkImageData");
+    return 0;
     }
 
-  vtkImageShiftScale* castSource = vtkImageShiftScale::New();
-  castSource->SetOutputScalarTypeToFloat();
-  castSource->SetInput(input);
-  castSource->Update();
+  vtkImageShiftScale* castInput = vtkImageShiftScale::New();
+  castInput->SetOutputScalarTypeToFloat();
+  castInput->SetInput(input);
+  castInput->Update();
+
+  vtkImageShiftScale* castKernel = vtkImageShiftScale::New();
+  castKernel->SetOutputScalarTypeToFloat();
+  castKernel->SetInput(kernelInput);
+  castKernel->Update();
 
   // Hook up to the beginning of the ITK pipeline
-  this->VTKExporter->SetInput(castSource->GetOutput());
-
-  this->GaussianNoiseFilter->SetInput(NULL);
-  this->PoissonNoiseFilter->SetInput(NULL);
+  this->VTKExporter->SetInput(castInput->GetOutput());
+  this->VTKKernelExporter->SetInput(castKernel->GetOutput());
 
   // Now connect the ITK pipeline output to the VTK output
-  if (NoiseType == GAUSSIAN_NOISE)
-    {
-    this->GaussianNoiseFilter->SetInput(this->ITKImporter->GetOutput());
-    this->GaussianNoiseFilter->SetMean(this->Mean);
-    this->GaussianNoiseFilter->SetStandardDeviation(this->StandardDeviation);
+  this->ITKConvolutionFilter->SetInput(this->ITKImporter->GetOutput());
+  this->ITKConvolutionFilter->SetKernelImage(this->ITKKernelImporter->GetOutput());
 
-    this->GaussianNoiseFilter->Update();
+  this->ITKConvolutionFilter->Update();
 
-    this->ITKExporter->SetInput(this->GaussianNoiseFilter->GetOutput());
-    }
-  else if (NoiseType == POISSON_NOISE)
-    {
-    this->PoissonNoiseFilter->SetInput(this->ITKImporter->GetOutput());
-    this->PoissonNoiseFilter->Update();
-
-    this->ITKExporter->SetInput(this->PoissonNoiseFilter->GetOutput());
-    }
+  this->ITKExporter->SetInput(this->ITKConvolutionFilter->GetOutput());
 
   this->ITKExporter->Update();
 
@@ -164,7 +195,22 @@ int vtkNoiseImageFilter::RequestData(vtkInformation *request,
 }
 
 //----------------------------------------------------------------------------
-void vtkNoiseImageFilter::PrintSelf(ostream& os, vtkIndent indent)
+int vtkFFTConvolutionImageFilter::FillInputPortInformation(int port, vtkInformation *info)
+{
+  info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkImageData");
+  info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
+  info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
+
+  if (port == 0 || port == 1)
+    {
+    return 1;
+    }
+
+  return 0;
+}
+
+//----------------------------------------------------------------------------
+void vtkFFTConvolutionImageFilter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }

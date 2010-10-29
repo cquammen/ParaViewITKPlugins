@@ -4,9 +4,9 @@
        a filter already in ParaView (in Servers/ServerManager/Resources/*.xml)
        that matches your filter and then model your xml on it -->
   <ProxyGroup name="filters">
-   <SourceProxy name="NoiseFilter" class="vtkNoiseImageFilter" label="Noise Filter">
+   <SourceProxy name="FFTConvolutionImageFilter" class="vtkFFTConvolutionImageFilter" label="FFT Convolution Filter">
      <Documentation
-        long_help="Corrupt an image with pseudo-random noise."
+        long_help="Compute the convolution of an image with a kernel."
         short_help=".">
           Put some text describing the filter here.
      </Documentation>
@@ -21,7 +21,22 @@
              <DataType value="vtkImageData"/>
            </DataTypeDomain>
       </InputProperty>
+     <InputProperty
+	name="Kernel"
+	command="SetKernelImage">
+       <ProxyGroupDomain name="groups">
+	 <Group name="sources"/>
+	 <Group name="filters"/>
+       </ProxyGroupDomain>
+       <DataTypeDomain name="input_type">
+	 <DataType value="vtkImageData"/>
+       </DataTypeDomain>
+       <Documentation>
+	 docs
+       </Documentation>
+     </InputProperty>
 
+     <!--
      <IntVectorProperty
         name="Noise Type"
         command="SetNoiseType"
@@ -59,6 +74,7 @@
            .
          </Documentation>
       </DoubleVectorProperty>
+      -->
 
    <!-- End filter -->
    </SourceProxy>
