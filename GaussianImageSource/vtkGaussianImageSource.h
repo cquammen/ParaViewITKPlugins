@@ -57,6 +57,14 @@ public:
   vtkSetVector3Macro(Size, int);
   vtkGetVector3Macro(Size, int);
 
+  // Set/get origin.
+  vtkSetVector3Macro(Origin, double);
+  vtkGetVector3Macro(Origin, double);
+
+  // Set/get mean (center of Gaussian)
+  vtkSetVector3Macro(Mean, double);
+  vtkGetVector3Macro(Mean, double);
+
   // Set/get standard deviation of the Gaussian.
   vtkSetVector3Macro(StandardDeviation, double);
   vtkGetVector3Macro(StandardDeviation, double);
@@ -66,6 +74,8 @@ protected:
   ~vtkGaussianImageSource();
 
   int    Size[3];
+  double Origin[3];
+  double Mean[3];
   double StandardDeviation[3];
 
   //BTX

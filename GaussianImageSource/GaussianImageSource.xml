@@ -20,11 +20,35 @@
         command="SetSize"
         number_of_elements="3"
         animateable="0 0 0"
-        default_values="5 5 5" >
+        default_values="7 7 7" >
        <Documentation>
          .
        </Documentation>
      </IntVectorProperty>
+
+     <DoubleVectorProperty
+        name="Origin"
+        label="Origin"
+        command="SetOrigin"
+        number_of_elements="3"
+        animateable="1 1 1"
+        default_values="-3.0 -3.0 -3.0">
+       <Documentation>
+         .
+       </Documentation>
+     </DoubleVectorProperty>
+
+     <DoubleVectorProperty
+        name="Mean"
+        label="Mean"
+        command="SetMean"
+        number_of_elements="3"
+        animateable="1 1 1"
+        default_values="0.0 0.0 0.0" >
+       <Documentation>
+         .
+       </Documentation>
+     </DoubleVectorProperty>
 
      <DoubleVectorProperty
         name="Standard Deviation"
@@ -32,7 +56,7 @@
         command="SetStandardDeviation"
         number_of_elements="3"
         animateable="1 1 1"
-        default_values="1.0 1.0 1.0" >
+        default_values="2.0 2.0 2.0" >
        <Documentation>
          .
        </Documentation>

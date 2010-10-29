@@ -37,6 +37,8 @@ vtkGaussianImageSource::vtkGaussianImageSource()
   for (unsigned int i = 0; i < 3; i++)
     {
     this->Size[i] = 5;
+    this->Origin[i] = -(0.5 * (this->Size[i]-1));
+    this->Mean[i] = 0.0;
     this->StandardDeviation[i] = 1.0;
     }
 
@@ -118,6 +120,8 @@ int vtkGaussianImageSource::RequestData(vtkInformation *request,
         (this->StandardDeviation[i]);
       }
     this->GaussianSource->SetSize(size);
+    this->GaussianSource->SetOrigin(this->Origin);
+    this->GaussianSource->SetMean(this->Mean);
     this->GaussianSource->SetSigma(sigma);
     this->GaussianSource->Update();
 
