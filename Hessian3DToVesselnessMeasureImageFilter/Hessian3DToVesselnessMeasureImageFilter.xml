@@ -1,0 +1,39 @@
+<ServerManagerConfiguration>
+  <!-- This is the server manager configuration XML. It defines the interface to
+       our new filter. As a rule of thumb, try to locate the configuration for
+       a filter already in ParaView (in Servers/ServerManager/Resources/*.xml)
+       that matches your filter and then model your xml on it -->
+  <ProxyGroup name="filters">
+   <SourceProxy name="Hessian3DToVesselnessMeasureImageFilter" class="vtkHessian3DToVesselnessMeasureImageFilter" label="Hessian 3D To Vesselness Measure Image Filter">
+     <Documentation
+        long_help="."
+        short_help=".">
+          Put some text describing the filter here.
+     </Documentation>
+     <InputProperty
+        name="Input"
+        command="SetInputConnection">
+           <ProxyGroupDomain name="groups">
+             <Group name="sources"/>
+             <Group name="filters"/>
+           </ProxyGroupDomain>
+           <DataTypeDomain name="input_type">
+             <DataType value="vtkImageData"/>
+           </DataTypeDomain>
+      </InputProperty>
+
+      <IntVectorProperty
+         name="Sigma"
+         label="Sigma"
+         command="SetSigmaValue"
+         number_of_elements="1"
+         default_values="1" >
+         <Documentation>
+           .
+         </Documentation>
+      </IntVectorProperty>
+
+   <!-- End filter -->
+   </SourceProxy>
+ </ProxyGroup>
+</ServerManagerConfiguration>

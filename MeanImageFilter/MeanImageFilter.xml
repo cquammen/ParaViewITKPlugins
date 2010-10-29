@@ -1,0 +1,33 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="filters">
+   <SourceProxy name="Mean Filter" class="vtkMeanImageFilter" label="Mean Filter">
+     <Documentation
+        long_help="Apply a Mean filter to the image."
+        short_help=".">
+          Put some text describing the filter here.
+     </Documentation>
+     <InputProperty
+        name="Input"
+        command="SetInputConnection">
+           <ProxyGroupDomain name="groups">
+             <Group name="sources"/>
+             <Group name="filters"/>
+           </ProxyGroupDomain>
+           <DataTypeDomain name="input_type">
+             <DataType value="vtkImageData"/>
+           </DataTypeDomain>
+      </InputProperty>
+
+      <DoubleVectorProperty
+         name="Radius"
+         label="Radius"
+         command="SetNeighborhoodRadius"
+         number_of_elements="3"
+         default_values="1.0 1.0 1.0" >
+         <Documentation>
+           Define one end of the line (small scalar values). Default is (0).
+         </Documentation>
+      </DoubleVectorProperty>
+   </SourceProxy>
+ </ProxyGroup>
+</ServerManagerConfiguration>

@@ -32,8 +32,12 @@ ADD_SUBDIRECTORY( GaussianImageSource )
 ADD_SUBDIRECTORY( LaplacianOfGaussianFilter )
 ADD_SUBDIRECTORY( MedianImageFilter )
 ADD_SUBDIRECTORY( NoiseImageFilter )
+ADD_SUBDIRECTORY( MeanImageFilter )
+ADD_SUBDIRECTORY( OtsuThresholdImageFilter )
+ADD_SUBDIRECTORY( Hessian3DToVesselnessMeasureImageFilter)
 
 # This plugin does not currently compile on Windows
 IF( NOT WIN32 )
   ADD_SUBDIRECTORY( FFTConvolutionImageFilter )
 ENDIF( NOT WIN32 )
+

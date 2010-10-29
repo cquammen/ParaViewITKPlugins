@@ -59,6 +59,7 @@ public:
   vtkSetVector3Macro(NeighborhoodRadius, int);
   vtkGetVector3Macro(NeighborhoodRadius, int);
 
+
 protected:
   vtkMedianImageFilter();
   ~vtkMedianImageFilter();
