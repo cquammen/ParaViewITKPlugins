@@ -89,8 +89,8 @@ int vtkMeanImageFilter::RequestData(vtkInformation *request,
     (inInfo->Get(vtkDataObject::DATA_OBJECT()));
   if(!input)
     {
-      vtkErrorMacro("Output is not of type vtkImageData");
-      return 0;
+    vtkErrorMacro("Output is not of type vtkImageData");
+    return 0;
     }
 
   vtkImageShiftScale* castSource = vtkImageShiftScale::New();
@@ -105,11 +105,10 @@ int vtkMeanImageFilter::RequestData(vtkInformation *request,
   // Set up ITK pipeline settings here
   this->MeanFilter->SetInput(this->ITKImporter->GetOutput());
 
-//  double radius[3];
   ITKImageType::SizeType radius;
   for (unsigned int i = 0; i < 3; i++)
     {
-      radius[i] = this->NeighborhoodRadius[i];
+    radius[i] = this->NeighborhoodRadius[i];
     }
   this->MeanFilter->SetRadius(radius);
   this->MeanFilter->Update();
@@ -124,8 +123,8 @@ int vtkMeanImageFilter::RequestData(vtkInformation *request,
     (outInfo->Get(vtkDataObject::DATA_OBJECT()));
   if (!output)
     {
-      vtkErrorMacro("Output is not of type vtkImageData");
-      return 0;
+    vtkErrorMacro("Output is not of type vtkImageData");
+    return 0;
     }
 
   this->VTKImporter->Update();

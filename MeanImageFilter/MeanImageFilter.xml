@@ -1,6 +1,6 @@
 <ServerManagerConfiguration>
   <ProxyGroup name="filters">
-   <SourceProxy name="Mean Filter" class="vtkMeanImageFilter" label="Mean Filter">
+   <SourceProxy name="Mean Image Filter" class="vtkMeanImageFilter" label="Mean Image Filter">
      <Documentation
         long_help="Apply a Mean filter to the image."
         short_help=".">
@@ -18,16 +18,16 @@
            </DataTypeDomain>
       </InputProperty>
 
-      <DoubleVectorProperty
+      <IntVectorProperty
          name="Radius"
          label="Radius"
          command="SetNeighborhoodRadius"
          number_of_elements="3"
-         default_values="1.0 1.0 1.0" >
+         default_values="1 1 1" >
          <Documentation>
            Define one end of the line (small scalar values). Default is (0).
          </Documentation>
-      </DoubleVectorProperty>
+      </IntVectorProperty>
    </SourceProxy>
  </ProxyGroup>
 </ServerManagerConfiguration>
