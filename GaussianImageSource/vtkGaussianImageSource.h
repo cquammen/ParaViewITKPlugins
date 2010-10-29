@@ -78,7 +78,8 @@ protected:
   void InitializeITKImporter();
   void InitializeITKExporter();
 
-  int RequestData(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector);
+  virtual int RequestInformation (vtkInformation *, vtkInformationVector**, vtkInformationVector *);
+  virtual int RequestData(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector);
 
   //BTX
   template <class T>

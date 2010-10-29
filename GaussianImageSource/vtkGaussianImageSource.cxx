@@ -21,6 +21,8 @@
 #include "vtkImageData.h"
 #include "vtkInformationVector.h"
 #include "vtkInformation.h"
+#include "vtkPointData.h"
+#include "vtkStreamingDemandDrivenPipeline.h"
 
 #include "vtkImageShiftScale.h"
 
@@ -30,9 +32,18 @@ vtkStandardNewMacro(vtkGaussianImageSource);
 vtkGaussianImageSource::vtkGaussianImageSource()
 {
   this->SetNumberOfInputPorts(0);
+  this->SetNumberOfOutputPorts(1);
+
+  for (unsigned int i = 0; i < 3; i++)
+    {
+    this->Size[i] = 5;
+    this->StandardDeviation[i] = 1.0;
+    }
+
   this->GaussianSource = ITKGaussianSourceType::New();
   this->ITKExporter = ITKImageExportType::New();
   this->VTKImporter = vtkImageImport::New();
+  this->VTKImporter->SetScalarArrayName("GaussianFunction");
 
   this->InitializeITKExporter();
 }
@@ -64,6 +75,28 @@ void vtkGaussianImageSource::InitializeITKExporter()
   this->VTKImporter->SetUpdateDataCallback(ITKExporter->GetUpdateDataCallback());
   this->VTKImporter->SetDataExtentCallback(ITKExporter->GetDataExtentCallback());
   this->VTKImporter->SetBufferPointerCallback(ITKExporter->GetBufferPointerCallback());
+}
+
+//----------------------------------------------------------------------------
+int vtkGaussianImageSource::RequestInformation (
+  vtkInformation * vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed( inputVector ),
+  vtkInformationVector *outputVector)
+{
+  // get the info objects
+  vtkInformation* outInfo = outputVector->GetInformationObject(0);
+
+  int wholeExtent[6];
+  wholeExtent[0] = wholeExtent[2] = wholeExtent[4] = 0;
+  wholeExtent[1] = this->Size[0] - 1;
+  wholeExtent[3] = this->Size[1] - 1;
+  wholeExtent[5] = this->Size[2] - 1;
+
+  outInfo->Set(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT(),
+               wholeExtent,6);
+  outInfo->Set(vtkDataObject::SPACING(), 1.0, 1.0, 1.0);
+  vtkDataObject::SetPointDataActiveScalarInfo(outInfo, VTK_FLOAT, 1);
+  return 1;
 }
 
 //----------------------------------------------------------------------------
@@ -104,10 +137,11 @@ int vtkGaussianImageSource::RequestData(vtkInformation *request,
     this->VTKImporter->Update();
     this->VTKImporter->Update();
 
-    output->DeepCopy(this->VTKImporter->GetOutput());
+    output->ShallowCopy(this->VTKImporter->GetOutput());
     }
   catch(itk::ExceptionObject& error)
     {
+    vtkErrorMacro(<< "Exception caught when running ITK filter." );
     }
 
   return 1;
