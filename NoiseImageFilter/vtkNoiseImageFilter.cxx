@@ -22,6 +22,8 @@
 #include "vtkInformation.h"
 #include "vtkImageShiftScale.h"
 
+#include "vtkPointData.h"
+
 // Warning: this is really a hack to avoid creating a library just for
 // the following class.
 #include "itkThreadSafeMersenneTwisterRandomVariateGenerator.cxx"
@@ -39,6 +41,7 @@ vtkNoiseImageFilter::vtkNoiseImageFilter()
   this->PoissonNoiseFilter  = ITKPoissonNoiseFilterType::New();
   this->ITKExporter = ITKImageExportType::New();
   this->VTKImporter = vtkImageImport::New();
+  this->VTKImporter->SetScalarArrayName("NoisyScalars");
 
   this->InitializeITKImporter();
   this->InitializeITKExporter();
@@ -158,7 +161,7 @@ int vtkNoiseImageFilter::RequestData(vtkInformation *request,
   this->VTKImporter->Update();
   this->VTKImporter->Update();
 
-  output->DeepCopy(this->VTKImporter->GetOutput());
+  output->ShallowCopy(this->VTKImporter->GetOutput());
 
   return 1;
 }
