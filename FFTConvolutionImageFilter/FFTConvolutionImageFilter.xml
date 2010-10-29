@@ -11,7 +11,7 @@
           Put some text describing the filter here.
      </Documentation>
      <InputProperty
-        name="Input"
+        name="Image to Convolve"
         command="SetInputConnection">
            <ProxyGroupDomain name="groups">
              <Group name="sources"/>
@@ -22,7 +22,7 @@
            </DataTypeDomain>
       </InputProperty>
      <InputProperty
-	name="Kernel"
+	name="Convolution Kernel"
 	command="SetKernelImage">
        <ProxyGroupDomain name="groups">
 	 <Group name="sources"/>
@@ -36,45 +36,21 @@
        </Documentation>
      </InputProperty>
 
-     <!--
      <IntVectorProperty
-        name="Noise Type"
-        command="SetNoiseType"
+        name="Border Padding Method"
+        command="SetPaddingMethod"
         number_of_elements="1"
-        default_values="0" >
+        default_values="1" >
        <EnumerationDomain name="enum">
-         <Entry value="0" text="Gaussian Noise"/>
-         <Entry value="1" text="Poisson Noise"/>
+         <Entry value="1" text="Zero-flux Neumann"/>
+         <Entry value="2" text="Zero"/>
+         <Entry value="3" text="Mirror"/>
+         <Entry value="4" text="Wrap"/>
        </EnumerationDomain>
        <Documentation>
-         Choose which type of noise to add to the image.
+         Choose which type of padding method should be used to reduce boundary effects.
        </Documentation>
      </IntVectorProperty>
-
-      <DoubleVectorProperty
-         name="Standard Deviation"
-         label="StandardDeviation"
-         command="SetStandardDeviation"
-         number_of_elements="1"
-         animateable="1"
-         default_values="1.0" >
-         <Documentation>
-           .
-         </Documentation>
-      </DoubleVectorProperty>
-
-      <DoubleVectorProperty
-         name="Mean"
-         label="Mean"
-         command="SetMean"
-         number_of_elements="1"
-         animateable="1"
-         default_values="0.0" >
-        <Documentation>
-           .
-         </Documentation>
-      </DoubleVectorProperty>
-      -->
 
    <!-- End filter -->
    </SourceProxy>

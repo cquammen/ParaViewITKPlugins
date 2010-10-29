@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Visualization Toolkit
-  Module:    vtkFFTConvolutionImageFilter.h
+  Module:    vtkGaussianImageSource.h
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
@@ -12,7 +12,7 @@
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
-// .NAME vtkFFTConvolutionImageFilter - peforms Gaussian blurring of an input image
+// .NAME vtkGaussianImageSource - peforms Gaussian blurring of an input image
 // .SECTION Description
 // vtkMyImageShiftFilter is a filter to generate scalar values from a
 // dataset.  The scalar values lie within a user specified range, and
@@ -20,19 +20,19 @@
 // a line. The line can be oriented arbitrarily. A typical example is
 // to generate scalars based on elevation or height above a plane.
 
-#ifndef __vtkFFTConvolutionImageFilter_h
-#define __vtkFFTConvolutionImageFilter_h
+#ifndef __vtkGaussianImageSource_h
+#define __vtkGaussianImageSource_h
 
 #include <vtkImageAlgorithm.h>
 
 #include <itkVTKImageImport.h>
 #include <itkVTKImageExport.h>
-#include <itkFFTConvolutionImageFilter.h>
+#include <itkGaussianImageSource.h>
 
 class vtkImageExport;
 class vtkImageImport;
 
-class VTK_EXPORT vtkFFTConvolutionImageFilter : public vtkImageAlgorithm
+class VTK_EXPORT vtkGaussianImageSource : public vtkImageAlgorithm
 {
 public:
 
@@ -45,44 +45,40 @@ public:
     ITKImageImportType;
   typedef itk::VTKImageExport< ITKImageType >
     ITKImageExportType;
-  typedef itk::FFTConvolutionImageFilter< ITKImageType, ITKImageType, ITKImageType >
-    ITKFFTConvolutionFilterType;
+  typedef itk::GaussianImageSource< ITKImageType >
+    ITKGaussianSourceType;
   //ETX
 
-  static vtkFFTConvolutionImageFilter* New();
-  vtkTypeMacro(vtkFFTConvolutionImageFilter, vtkImageAlgorithm);
+  static vtkGaussianImageSource* New();
+  vtkTypeMacro(vtkGaussianImageSource, vtkImageAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  // Set the convolution kernel image
-  void SetKernelImage(vtkAlgorithmOutput* image);
+  // Set/get image size.
+  vtkSetVector3Macro(Size, int);
+  vtkGetVector3Macro(Size, int);
 
-  // Set/get the image padding type
-  vtkSetMacro(PaddingMethod, int);
-  vtkGetMacro(PaddingMethod, int);
+  // Set/get standard deviation of the Gaussian.
+  vtkSetVector3Macro(StandardDeviation, double);
+  vtkGetVector3Macro(StandardDeviation, double);
 
 protected:
-  vtkFFTConvolutionImageFilter();
-  ~vtkFFTConvolutionImageFilter();
+  vtkGaussianImageSource();
+  ~vtkGaussianImageSource();
 
-  int PaddingMethod;
+  int    Size[3];
+  double StandardDeviation[3];
 
-  vtkImageExport*                VTKExporter;
-  vtkImageExport*                VTKKernelExporter;
   //BTX
-  ITKImageImportType::Pointer          ITKImporter;
-  ITKImageImportType::Pointer          ITKKernelImporter;
-  ITKFFTConvolutionFilterType::Pointer ITKConvolutionFilter;
-  ITKImageExportType::Pointer          ITKExporter;
+  ITKGaussianSourceType::Pointer GaussianSource;
+  ITKImageExportType::Pointer    ITKExporter;
   //ETX
   vtkImageImport*                VTKImporter;
 
 protected:
-  void InitializeITKImporters();
+  void InitializeITKImporter();
   void InitializeITKExporter();
 
   int RequestData(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector);
-
-  int FillInputPortInformation(int port, vtkInformation *info);
 
   //BTX
   template <class T>
@@ -90,8 +86,8 @@ protected:
   //ETX
 
 private:
-  vtkFFTConvolutionImageFilter(const vtkFFTConvolutionImageFilter&);  // Not implemented.
-  void operator=(const vtkFFTConvolutionImageFilter&);  // Not implemented.
+  vtkGaussianImageSource(const vtkGaussianImageSource&);  // Not implemented.
+  void operator=(const vtkGaussianImageSource&);  // Not implemented.
 };
 
 #endif

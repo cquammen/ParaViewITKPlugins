@@ -1,0 +1,44 @@
+<ServerManagerConfiguration>
+  <!-- This is the server manager configuration XML. It defines the interface to
+       our new filter. As a rule of thumb, try to locate the configuration for
+       a filter already in ParaView (in Servers/ServerManager/Resources/*.xml)
+       that matches your filter and then model your xml on it -->
+  <ProxyGroup name="sources">
+   <SourceProxy
+      name="GaussianImageSource"
+      class="vtkGaussianImageSource"
+      label="Gaussian Image Source">
+     <Documentation
+        long_help="Generate a 3D Gaussian image."
+        short_help=".">
+          Put some text describing the filter here.
+     </Documentation>
+
+     <IntVectorProperty
+        name="Image Size"
+        label="Image Size"
+        command="SetSize"
+        number_of_elements="3"
+        animateable="0 0 0"
+        default_values="5 5 5" >
+       <Documentation>
+         .
+       </Documentation>
+     </IntVectorProperty>
+
+     <DoubleVectorProperty
+        name="Standard Deviation"
+        label="Standard Deviation"
+        command="SetStandardDeviation"
+        number_of_elements="3"
+        animateable="1 1 1"
+        default_values="1.0 1.0 1.0" >
+       <Documentation>
+         .
+       </Documentation>
+     </DoubleVectorProperty>
+
+   <!-- End filter -->
+   </SourceProxy>
+ </ProxyGroup>
+</ServerManagerConfiguration>

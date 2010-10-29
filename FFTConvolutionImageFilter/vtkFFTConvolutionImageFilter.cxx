@@ -165,31 +165,41 @@ int vtkFFTConvolutionImageFilter::RequestData(vtkInformation *request,
   this->VTKExporter->SetInput(castInput->GetOutput());
   this->VTKKernelExporter->SetInput(castKernel->GetOutput());
 
-  // Now connect the ITK pipeline output to the VTK output
-  this->ITKConvolutionFilter->SetInput(this->ITKImporter->GetOutput());
-  this->ITKConvolutionFilter->SetKernelImage(this->ITKKernelImporter->GetOutput());
-
-  this->ITKConvolutionFilter->Update();
-
-  this->ITKExporter->SetInput(this->ITKConvolutionFilter->GetOutput());
-
-  this->ITKExporter->Update();
-
-  vtkInformation *outInfo = outputVector->GetInformationObject(0);
-  vtkImageData *output = vtkImageData::SafeDownCast
-    (outInfo->Get(vtkDataObject::DATA_OBJECT()));
-  if (!output)
+  try
     {
+    // Now connect the ITK pipeline output to the VTK output
+    this->ITKConvolutionFilter->SetInput(this->ITKImporter->GetOutput());
+    this->ITKConvolutionFilter->SetKernelImage(this->ITKKernelImporter->GetOutput());
+    this->ITKConvolutionFilter->SetPadMethod(this->PaddingMethod);
+    this->ITKConvolutionFilter->Update();
+
+    this->ITKExporter->SetInput(this->ITKConvolutionFilter->GetOutput());
+
+    this->ITKExporter->Update();
+
+    vtkInformation *outInfo = outputVector->GetInformationObject(0);
+    vtkImageData *output = vtkImageData::SafeDownCast
+      (outInfo->Get(vtkDataObject::DATA_OBJECT()));
+    if (!output)
+      {
       vtkErrorMacro("Output is not of type vtkImageData");
       return 0;
+      }
+
+    // For some reason, updates don't seem to go through unless you call
+    // the following twice.
+    this->VTKImporter->Update();
+    this->VTKImporter->Update();
+
+    output->DeepCopy(this->VTKImporter->GetOutput());
+    }
+  catch (itk::ExceptionObject& error)
+    {
+
     }
 
-  // For some reason, updates don't seem to go through unless you call
-  // the following twice.
-  this->VTKImporter->Update();
-  this->VTKImporter->Update();
-
-  output->DeepCopy(this->VTKImporter->GetOutput());
+  castInput->Delete();
+  castKernel->Delete();
 
   return 1;
 }
