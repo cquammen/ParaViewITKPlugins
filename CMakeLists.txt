@@ -28,6 +28,7 @@ ADD_SUBDIRECTORY( InsightJournal )
 
 # Add plugins directories below
 ADD_SUBDIRECTORY( GaussianBlurImageFilter )
+ADD_SUBDIRECTORY( GaussianImageSource )
 ADD_SUBDIRECTORY( LaplacianOfGaussianFilter )
 ADD_SUBDIRECTORY( MedianImageFilter )
 ADD_SUBDIRECTORY( NoiseImageFilter )
