@@ -64,8 +64,7 @@ protected:
   vtkMedianImageFilter();
   ~vtkMedianImageFilter();
 
-//  int NeighborhoodRadius[3];
-  double NeighborhoodRadius[3];
+  int NeighborhoodRadius[3];
 
   vtkImageExport*                VTKExporter;
   //BTX
