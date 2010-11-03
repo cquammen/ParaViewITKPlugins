@@ -50,11 +50,11 @@ protected:
 
 
   //BTX
-  vtkImageCast*               VTKCaster;
-  vtkImageExport*             VTKExporter;
-  ITKImageImportType::Pointer ITKImporter;
-  ITKImageExportType::Pointer ITKExporter;
-  vtkImageImport*             VTKImporter;
+  vtkImageCast**               VTKCasters;
+  vtkImageExport**             VTKExporters;
+  ITKImageImportType::Pointer* ITKImporters;
+  ITKImageExportType::Pointer  ITKExporter;
+  vtkImageImport*              VTKImporter;
   //ETX
 
 protected:
@@ -63,11 +63,19 @@ protected:
 
   // DESCRIPTION:
   // Set the first filter in the ITK pipeline that receives input from
-  // the VTK image passed into this filter.
+  // the VTK image passed into this filter. Note that this method
+  // assigns the inputs to the ITK filter in the order they are given
+  // by the input to the VTK class. If you need a different mapping
+  // between the input to VTK and the input of the ITK filter,
+  // override this method to set up the mapping.
   template< class T >
   void SetITKPipelineFirstFilter(T* filter)
   {
-    filter->SetInput(this->ITKImporter->GetOutput());
+    int numPorts = this->GetNumberOfInputPorts();
+    for (int i = 0; i < numPorts; i++)
+      {
+      filter->SetInput(i, this->ITKImporters[i]->GetOutput());
+      }
   }
 
   // DESCRIPTION:
