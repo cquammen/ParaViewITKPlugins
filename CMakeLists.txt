@@ -35,6 +35,7 @@ ADD_SUBDIRECTORY( NoiseImageFilter )
 ADD_SUBDIRECTORY( MeanImageFilter )
 ADD_SUBDIRECTORY( OtsuThresholdImageFilter )
 ADD_SUBDIRECTORY( Hessian3DToVesselnessMeasureImageFilter)
+ADD_SUBDIRECTORY( DeconvolutionFilters )
 
 # This plugin does not currently compile on Windows
 IF( NOT WIN32 )
