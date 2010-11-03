@@ -35,8 +35,8 @@ vtkLaplacianOfGaussianFilter::vtkLaplacianOfGaussianFilter()
   this->LOGFilter = ITKLOGFilterType::New();
 
   // Set the first and last filters in the internal ITK pipeline.
-  this->SetITKPipelineFirstFilter(this->LOGFilter);
-  this->SetITKPipelineLastFilter(this->LOGFilter);
+  this->SetITKPipelineFirstFilter<ITKInternalFilterType>(this->LOGFilter);
+  this->SetITKPipelineLastFilter<ITKInternalFilterType>(this->LOGFilter);
 }
 
 //----------------------------------------------------------------------------

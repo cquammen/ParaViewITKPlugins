@@ -37,8 +37,8 @@ vtkMedianImageFilter::vtkMedianImageFilter()
   this->MedianFilter = ITKMedianFilterType::New();
 
   // Set the first and last filters in the internal ITK pipeline.
-  this->SetITKPipelineFirstFilter(this->MedianFilter);
-  this->SetITKPipelineLastFilter(this->MedianFilter);
+  this->SetITKPipelineFirstFilter<ITKInternalFilterType>(this->MedianFilter);
+  this->SetITKPipelineLastFilter<ITKInternalFilterType>(this->MedianFilter);
 }
 
 //----------------------------------------------------------------------------

@@ -35,8 +35,8 @@ vtkGaussianBlurImageFilter::vtkGaussianBlurImageFilter()
   this->GaussianFilter = ITKGaussianFilterType::New();
 
   // Set the first and last filters in the internal ITK pipeline.
-  this->SetITKPipelineFirstFilter(this->GaussianFilter);
-  this->SetITKPipelineLastFilter(this->GaussianFilter);
+  this->SetITKPipelineFirstFilter<ITKInternalFilterType>(this->GaussianFilter);
+  this->SetITKPipelineLastFilter<ITKInternalFilterType>(this->GaussianFilter);
 }
 
 //----------------------------------------------------------------------------

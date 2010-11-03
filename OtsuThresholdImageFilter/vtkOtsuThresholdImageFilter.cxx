@@ -38,8 +38,8 @@ vtkOtsuThresholdImageFilter::vtkOtsuThresholdImageFilter()
   this->OtsuFilter->SetOutsideValue(1.0);
 
   // Set the first and last filters in the internal ITK pipeline.
-  this->SetITKPipelineFirstFilter(this->OtsuFilter);
-  this->SetITKPipelineLastFilter(this->OtsuFilter);
+  this->SetITKPipelineFirstFilter<ITKInternalFilterType>(this->OtsuFilter);
+  this->SetITKPipelineLastFilter<ITKInternalFilterType>(this->OtsuFilter);
 }
 
 //----------------------------------------------------------------------------

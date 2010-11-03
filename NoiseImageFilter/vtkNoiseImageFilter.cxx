@@ -48,8 +48,8 @@ vtkNoiseImageFilter::vtkNoiseImageFilter()
   this->PoissonNoiseFilter  = ITKPoissonNoiseFilterType::New();
 
   // Set the first and last filters in the internal ITK pipeline.
-  this->SetITKPipelineFirstFilter(this->GaussianNoiseFilter);
-  this->SetITKPipelineLastFilter(this->GaussianNoiseFilter);
+  this->SetITKPipelineFirstFilter<ITKInternalFilterType>(this->GaussianNoiseFilter);
+  this->SetITKPipelineLastFilter<ITKInternalFilterType>(this->GaussianNoiseFilter);
 }
 
 //----------------------------------------------------------------------------
@@ -73,8 +73,8 @@ int vtkNoiseImageFilter::UpdateInternalFilters()
     this->GaussianNoiseFilter->Update();
 
     //this->ITKExporter->SetInput(this->GaussianNoiseFilter->GetOutput());
-    this->SetITKPipelineFirstFilter(this->GaussianNoiseFilter);
-    this->SetITKPipelineLastFilter(this->GaussianNoiseFilter);
+    this->SetITKPipelineFirstFilter<ITKInternalFilterType>(this->GaussianNoiseFilter);
+    this->SetITKPipelineLastFilter<ITKInternalFilterType>(this->GaussianNoiseFilter);
     }
   else if (NoiseType == POISSON_NOISE)
     {
@@ -82,8 +82,8 @@ int vtkNoiseImageFilter::UpdateInternalFilters()
     this->PoissonNoiseFilter->Update();
 
     //this->ITKExporter->SetInput(this->PoissonNoiseFilter->GetOutput());
-    this->SetITKPipelineFirstFilter(this->PoissonNoiseFilter);
-    this->SetITKPipelineLastFilter(this->PoissonNoiseFilter);
+    this->SetITKPipelineFirstFilter<ITKInternalFilterType>(this->PoissonNoiseFilter);
+    this->SetITKPipelineLastFilter<ITKInternalFilterType>(this->PoissonNoiseFilter);
     }
 
   return 1;

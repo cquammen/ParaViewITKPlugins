@@ -54,7 +54,9 @@ protected:
 
   double StandardDeviation[3];
 
+  //BTX
   ITKGaussianFilterType::Pointer GaussianFilter;
+  //ETX
 
 protected:
   int UpdateInternalFilters();

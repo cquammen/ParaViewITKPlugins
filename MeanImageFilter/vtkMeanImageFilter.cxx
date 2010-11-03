@@ -22,8 +22,8 @@ vtkMeanImageFilter::vtkMeanImageFilter()
   this->MeanFilter = ITKMeanFilterType::New();
 
   // Set the first and last filters in the internal ITK pipeline.
-  this->SetITKPipelineFirstFilter(this->MeanFilter);
-  this->SetITKPipelineLastFilter(this->MeanFilter);
+  this->SetITKPipelineFirstFilter<ITKInternalFilterType>(this->MeanFilter);
+  this->SetITKPipelineLastFilter<ITKInternalFilterType>(this->MeanFilter);
 }
 
 //----------------------------------------------------------------------------
