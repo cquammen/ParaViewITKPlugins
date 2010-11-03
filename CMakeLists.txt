@@ -23,7 +23,14 @@ MARK_AS_ADVANCED(USE_FFTWF)
 OPTION(USE_FFTWF "Use single precision FFTW if found" ON)
 FIND_PACKAGE(FFTW REQUIRED)
 
+INCLUDE_DIRECTORIES(
+  ${ParaViewITKPlugins_SOURCE_DIR}
+  ${ParaViewITKPlugins_SOURCE_DIR}/Common
+)
+
+
 # Add supporting directories below
+ADD_SUBDIRECTORY( Common )
 ADD_SUBDIRECTORY( InsightJournal )
 
 # Add plugins directories below
@@ -31,14 +38,13 @@ ADD_SUBDIRECTORY( GaussianBlurImageFilter )
 ADD_SUBDIRECTORY( GaussianImageSource )
 ADD_SUBDIRECTORY( LaplacianOfGaussianFilter )
 ADD_SUBDIRECTORY( MedianImageFilter )
-ADD_SUBDIRECTORY( NoiseImageFilter )
 ADD_SUBDIRECTORY( MeanImageFilter )
 ADD_SUBDIRECTORY( OtsuThresholdImageFilter )
 ADD_SUBDIRECTORY( Hessian3DToVesselnessMeasureImageFilter)
-ADD_SUBDIRECTORY( DeconvolutionFilters )
 
-# This plugin does not currently compile on Windows
+# These plugin does not currently compile on Windows
 IF( NOT WIN32 )
+  ADD_SUBDIRECTORY( NoiseImageFilter )
   ADD_SUBDIRECTORY( FFTConvolutionImageFilter )
+  ADD_SUBDIRECTORY( DeconvolutionFilters )
 ENDIF( NOT WIN32 )
-
