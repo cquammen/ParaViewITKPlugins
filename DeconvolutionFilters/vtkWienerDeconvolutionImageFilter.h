@@ -23,35 +23,27 @@
 #ifndef __vtkWienerDeconvolutionImageFilter_h
 #define __vtkWienerDeconvolutionImageFilter_h
 
-#include <vtkImageAlgorithm.h>
+#include <vtkITKImageFilter.h>
 
-#include <itkVTKImageImport.h>
-#include <itkVTKImageExport.h>
 #include <itkWienerDeconvolutionImageFilter.h>
 
-class vtkImageExport;
-class vtkImageImport;
-
-class VTK_EXPORT vtkWienerDeconvolutionImageFilter : public vtkImageAlgorithm
+class VTK_EXPORT vtkWienerDeconvolutionImageFilter : public vtkITKImageFilter
 {
 public:
 
+  static vtkWienerDeconvolutionImageFilter* New();
+  vtkTypeMacro(vtkWienerDeconvolutionImageFilter, vtkITKImageFilter);
+  void PrintSelf(ostream& os, vtkIndent indent);
+
   //BTX
-  typedef float
-    PixelType;
-  typedef itk::Image< PixelType, 3 >
-    ITKImageType;
-  typedef itk::VTKImageImport< ITKImageType >
-    ITKImageImportType;
-  typedef itk::VTKImageExport< ITKImageType >
-    ITKImageExportType;
+  typedef Superclass::PixelType             PixelType;
+  typedef Superclass::ITKImageType          ITKImageType;
+  typedef Superclass::ITKInternalFilterType ITKInternalFilterType;
+  typedef Superclass::ITKImageImportType    ITKImageImportType;
+  typedef Superclass::ITKImageExportType    ITKImageExportType;
   typedef itk::WienerDeconvolutionImageFilter< ITKImageType, ITKImageType, ITKImageType >
     ITKDeconvolutionFilterType;
   //ETX
-
-  static vtkWienerDeconvolutionImageFilter* New();
-  vtkTypeMacro(vtkWienerDeconvolutionImageFilter, vtkImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
 
   // Set the convolution kernel image
   void SetKernelImage(vtkAlgorithmOutput* image);
@@ -66,29 +58,16 @@ protected:
 
   int PaddingMethod;
 
-  vtkImageExport*                VTKExporter;
-  vtkImageExport*                VTKKernelExporter;
   //BTX
-  ITKImageImportType::Pointer         ITKImporter;
-  ITKImageImportType::Pointer         ITKKernelImporter;
   ITKDeconvolutionFilterType::Pointer ITKDeconvolutionFilter;
-  ITKImageExportType::Pointer         ITKExporter;
   //ETX
-  vtkImageImport*                VTKImporter;
 
 protected:
-  void InitializeITKImporters();
-  void InitializeITKExporter();
-
-  virtual int RequestData(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector);
   virtual int RequestUpdateExtent (vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
   virtual int FillInputPortInformation(int port, vtkInformation *info);
 
-  //BTX
-  template <class T>
-  void RunITKPipeline(const T *input);
-  //ETX
+  int UpdateInternalFilters();
 
 private:
   vtkWienerDeconvolutionImageFilter(const vtkWienerDeconvolutionImageFilter&);  // Not implemented.

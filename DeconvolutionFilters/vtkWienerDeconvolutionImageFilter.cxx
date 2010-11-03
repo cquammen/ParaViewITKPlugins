@@ -34,38 +34,24 @@ vtkStandardNewMacro(vtkWienerDeconvolutionImageFilter);
 //----------------------------------------------------------------------------
 vtkWienerDeconvolutionImageFilter::vtkWienerDeconvolutionImageFilter()
 {
+  // Set up number of input and output ports
   this->SetNumberOfInputPorts(2);
   this->SetNumberOfOutputPorts(1);
 
-  this->VTKExporter            = vtkImageExport::New();
-  this->VTKKernelExporter      = vtkImageExport::New();
-  this->ITKImporter            = ITKImageImportType::New();
-  this->ITKKernelImporter      = ITKImageImportType::New();
-  this->ITKDeconvolutionFilter = ITKDeconvolutionFilterType::New();
-  this->ITKExporter            = ITKImageExportType::New();
-  this->VTKImporter            = vtkImageImport::New();
+  // Initialize the ITK-VTK glue.
+  this->Init();
 
-  this->InitializeITKImporters();
-  this->InitializeITKExporter();
+  // Set up the internal filter pipeline.
+  this->ITKDeconvolutionFilter = ITKDeconvolutionFilterType::New();
+
+  // Set the first and last filters in the internal ITK pipeline.
+  this->SetITKPipelineFirstFilter<ITKInternalFilterType>(this->ITKDeconvolutionFilter);
+  this->SetITKPipelineLastFilter<ITKInternalFilterType>(this->ITKDeconvolutionFilter);
 }
 
 //----------------------------------------------------------------------------
 vtkWienerDeconvolutionImageFilter::~vtkWienerDeconvolutionImageFilter()
 {
-  if (this->VTKExporter)
-    {
-    this->VTKExporter->Delete();
-    }
-
-  if (this->VTKKernelExporter)
-    {
-    this->VTKKernelExporter->Delete();
-    }
-
-  if (this->VTKImporter)
-    {
-    this->VTKImporter->Delete();
-    }
 }
 
 //----------------------------------------------------------------------------
@@ -75,134 +61,10 @@ void vtkWienerDeconvolutionImageFilter::SetKernelImage(vtkAlgorithmOutput* image
 }
 
 //----------------------------------------------------------------------------
-void vtkWienerDeconvolutionImageFilter::InitializeITKImporters()
+int vtkWienerDeconvolutionImageFilter::UpdateInternalFilters()
 {
-  // This call takes the place of the usual SetInput() method.
-  this->ITKImporter->SetCallbackUserData(this->VTKExporter);
-
-  // Set the rest of the callbacks
-  this->ITKImporter->SetBufferPointerCallback(this->VTKExporter->GetBufferPointerCallback());
-  this->ITKImporter->SetDataExtentCallback(this->VTKExporter->GetDataExtentCallback());
-  this->ITKImporter->SetOriginCallback(this->VTKExporter->GetOriginCallback());
-  this->ITKImporter->SetSpacingCallback(this->VTKExporter->GetSpacingCallback());
-  this->ITKImporter->SetNumberOfComponentsCallback(this->VTKExporter->GetNumberOfComponentsCallback());
-  this->ITKImporter->SetPipelineModifiedCallback(this->VTKExporter->GetPipelineModifiedCallback());
-  this->ITKImporter->SetPropagateUpdateExtentCallback(this->VTKExporter->GetPropagateUpdateExtentCallback());
-  this->ITKImporter->SetScalarTypeCallback(this->VTKExporter->GetScalarTypeCallback());
-  this->ITKImporter->SetUpdateDataCallback(this->VTKExporter->GetUpdateDataCallback());
-  this->ITKImporter->SetUpdateInformationCallback(this->VTKExporter->GetUpdateInformationCallback());
-  this->ITKImporter->SetWholeExtentCallback(this->VTKExporter->GetWholeExtentCallback());
-
-  // This call takes the place of the usual SetInput() method.
-  this->ITKKernelImporter->SetCallbackUserData(this->VTKKernelExporter);
-
-  // Set the rest of the callbacks
-  this->ITKKernelImporter->SetBufferPointerCallback(this->VTKKernelExporter->GetBufferPointerCallback());
-  this->ITKKernelImporter->SetDataExtentCallback(this->VTKKernelExporter->GetDataExtentCallback());
-  this->ITKKernelImporter->SetOriginCallback(this->VTKKernelExporter->GetOriginCallback());
-  this->ITKKernelImporter->SetSpacingCallback(this->VTKKernelExporter->GetSpacingCallback());
-  this->ITKKernelImporter->SetNumberOfComponentsCallback(this->VTKKernelExporter->GetNumberOfComponentsCallback());
-  this->ITKKernelImporter->SetPipelineModifiedCallback(this->VTKKernelExporter->GetPipelineModifiedCallback());
-  this->ITKKernelImporter->SetPropagateUpdateExtentCallback(this->VTKKernelExporter->GetPropagateUpdateExtentCallback());
-  this->ITKKernelImporter->SetScalarTypeCallback(this->VTKKernelExporter->GetScalarTypeCallback());
-  this->ITKKernelImporter->SetUpdateDataCallback(this->VTKKernelExporter->GetUpdateDataCallback());
-  this->ITKKernelImporter->SetUpdateInformationCallback(this->VTKKernelExporter->GetUpdateInformationCallback());
-  this->ITKKernelImporter->SetWholeExtentCallback(this->VTKKernelExporter->GetWholeExtentCallback());
-}
-
-//----------------------------------------------------------------------------
-void vtkWienerDeconvolutionImageFilter::InitializeITKExporter()
-{
-  // This call takes the place of the usual SetInput() method.
-  this->VTKImporter->SetCallbackUserData(ITKExporter->GetCallbackUserData());
-
-  // Set the rest of the callbacks
-  this->VTKImporter->SetUpdateInformationCallback(ITKExporter->GetUpdateInformationCallback());
-  this->VTKImporter->SetPipelineModifiedCallback(ITKExporter->GetPipelineModifiedCallback());
-  this->VTKImporter->SetWholeExtentCallback(ITKExporter->GetWholeExtentCallback());
-  this->VTKImporter->SetSpacingCallback(ITKExporter->GetSpacingCallback());
-  this->VTKImporter->SetOriginCallback(ITKExporter->GetOriginCallback());
-  this->VTKImporter->SetScalarTypeCallback(ITKExporter->GetScalarTypeCallback());
-  this->VTKImporter->SetNumberOfComponentsCallback(ITKExporter->GetNumberOfComponentsCallback());
-  this->VTKImporter->SetPropagateUpdateExtentCallback(ITKExporter->GetPropagateUpdateExtentCallback());
-  this->VTKImporter->SetUpdateDataCallback(ITKExporter->GetUpdateDataCallback());
-  this->VTKImporter->SetDataExtentCallback(ITKExporter->GetDataExtentCallback());
-  this->VTKImporter->SetBufferPointerCallback(ITKExporter->GetBufferPointerCallback());
-}
-
-//----------------------------------------------------------------------------
-int vtkWienerDeconvolutionImageFilter::RequestData(vtkInformation *request,
-					    vtkInformationVector **inputVector,
-					    vtkInformationVector *outputVector)
-{
-  vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
-  vtkImageData *input = vtkImageData::SafeDownCast
-    (inInfo->Get(vtkDataObject::DATA_OBJECT()));
-  if(!input)
-    {
-    vtkErrorMacro("Input is not of type vtkImageData");
-    return 0;
-    }
-  vtkInformation *kernelInfo = inputVector[1]->GetInformationObject(0);
-  vtkImageData *kernelInput = vtkImageData::SafeDownCast
-    (kernelInfo->Get(vtkDataObject::DATA_OBJECT()));
-  if (!kernelInfo)
-    {
-    vtkErrorMacro("Kernel is not of type vtkImageData");
-    return 0;
-    }
-
-  vtkImageShiftScale* castInput = vtkImageShiftScale::New();
-  castInput->SetOutputScalarTypeToFloat();
-  castInput->SetInput(input);
-  castInput->Update();
-
-  vtkImageShiftScale* castKernel = vtkImageShiftScale::New();
-  castKernel->SetOutputScalarTypeToFloat();
-  castKernel->SetInput(kernelInput);
-  castKernel->Update();
-
-  // Hook up to the beginning of the ITK pipeline
-  this->VTKExporter->SetInput(castInput->GetOutput());
-  this->VTKKernelExporter->SetInput(castKernel->GetOutput());
-
-  try
-    {
-    // Now connect the ITK pipeline output to the VTK output
-    this->ITKDeconvolutionFilter->SetInput(this->ITKImporter->GetOutput());
-    this->ITKDeconvolutionFilter->SetKernelImage(this->ITKKernelImporter->GetOutput());
-    this->ITKDeconvolutionFilter->SetPadMethod(this->PaddingMethod);
-    this->ITKDeconvolutionFilter->Update();
-
-    this->ITKExporter->SetInput(this->ITKDeconvolutionFilter->GetOutput());
-
-    this->ITKExporter->Update();
-
-    vtkInformation *outInfo = outputVector->GetInformationObject(0);
-    vtkImageData *output = vtkImageData::SafeDownCast
-      (outInfo->Get(vtkDataObject::DATA_OBJECT()));
-    if (!output)
-      {
-      vtkErrorMacro("Output is not of type vtkImageData");
-      return 0;
-      }
-
-    // For some reason, updates don't seem to go through unless you call
-    // the following twice.
-    this->VTKImporter->Update();
-    this->VTKImporter->Update();
-
-    output->DeepCopy(this->VTKImporter->GetOutput());
-    }
-  catch (itk::ExceptionObject& error)
-    {
-
-    }
-
-  castInput->Delete();
-  castKernel->Delete();
-
-  return 1;
+  this->ITKDeconvolutionFilter->SetPadMethod(this->PaddingMethod);
+  this->ITKDeconvolutionFilter->Update();
 }
 
 //----------------------------------------------------------------------------
