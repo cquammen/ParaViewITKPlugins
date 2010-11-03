@@ -66,24 +66,18 @@ int vtkNoiseImageFilter::UpdateInternalFilters()
   // Now connect the ITK pipeline output to the VTK output
   if (NoiseType == GAUSSIAN_NOISE)
     {
-    this->GaussianNoiseFilter->SetInput(this->ITKImporter->GetOutput());
     this->GaussianNoiseFilter->SetMean(this->Mean);
     this->GaussianNoiseFilter->SetStandardDeviation(this->StandardDeviation);
 
-    this->GaussianNoiseFilter->Update();
-
-    //this->ITKExporter->SetInput(this->GaussianNoiseFilter->GetOutput());
     this->SetITKPipelineFirstFilter<ITKInternalFilterType>(this->GaussianNoiseFilter);
     this->SetITKPipelineLastFilter<ITKInternalFilterType>(this->GaussianNoiseFilter);
+    this->GaussianNoiseFilter->Update();
     }
   else if (NoiseType == POISSON_NOISE)
     {
-    this->PoissonNoiseFilter->SetInput(this->ITKImporter->GetOutput());
-    this->PoissonNoiseFilter->Update();
-
-    //this->ITKExporter->SetInput(this->PoissonNoiseFilter->GetOutput());
     this->SetITKPipelineFirstFilter<ITKInternalFilterType>(this->PoissonNoiseFilter);
     this->SetITKPipelineLastFilter<ITKInternalFilterType>(this->PoissonNoiseFilter);
+    this->PoissonNoiseFilter->Update();
     }
 
   return 1;
