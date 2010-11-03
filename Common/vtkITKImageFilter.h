@@ -50,8 +50,6 @@ protected:
 
 
   //BTX
-  ITKInternalFilterType*      ITKPipelineFirstFilter;
-  ITKInternalFilterType*      ITKPipelineLastFilter;
   vtkImageCast*               VTKCaster;
   vtkImageExport*             VTKExporter;
   ITKImageImportType::Pointer ITKImporter;
@@ -64,9 +62,22 @@ protected:
   void InitializeVTKImporters();
 
   // DESCRIPTION:
-  // Set ITK filter whose output should be converted back to VTK.
-  void SetITKPipelineFirstFilter(ITKInternalFilterType* filter);
-  void SetITKPipelineLastFilter(ITKInternalFilterType* filter);
+  // Set the first filter in the ITK pipeline that receives input from
+  // the VTK image passed into this filter.
+  template< class T >
+  void SetITKPipelineFirstFilter(T* filter)
+  {
+    filter->SetInput(this->ITKImporter->GetOutput());
+  }
+
+  // DESCRIPTION:
+  // Set the laster filter in the ITK pipeline whose output should be
+  // converted back to VTK.
+  template< class T >
+  void SetITKPipelineLastFilter(T* filter)
+  {
+    this->ITKExporter->SetInput(filter->GetOutput());
+  }
 
   // DESCRIPTION:
   // Subclasses must call this method *after* specifying the number of

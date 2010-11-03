@@ -12,6 +12,9 @@
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
+#ifndef __vtkITKImageFilter_cxx
+#define __vtkITKImageFilter_cxx
+
 #include "vtkITKImageFilter.h"
 
 #include "vtkObjectFactory.h"
@@ -102,28 +105,6 @@ void vtkITKImageFilter::InitializeVTKImporters()
 }
 
 //----------------------------------------------------------------------------
-void vtkITKImageFilter::SetITKPipelineFirstFilter(ITKInternalFilterType* filter)
-{
-  if ( this->ITKPipelineFirstFilter != filter)
-    {
-    this->ITKPipelineFirstFilter = filter;
-    this->ITKPipelineFirstFilter->SetInput(this->ITKImporter->GetOutput());
-    this->Modified();
-    }
-}
-
-//----------------------------------------------------------------------------
-void vtkITKImageFilter::SetITKPipelineLastFilter(ITKInternalFilterType* filter)
-{
-  if ( this->ITKPipelineLastFilter != filter)
-    {
-    this->ITKPipelineLastFilter = filter;
-    this->ITKExporter->SetInput(filter->GetOutput());
-    this->Modified();
-    }
-}
-
-//----------------------------------------------------------------------------
 void vtkITKImageFilter::Init()
 {
   this->InitializeITKImporters();
@@ -207,3 +188,5 @@ void vtkITKImageFilter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }
+
+#endif // __vtkITKImageFilter_cxx
