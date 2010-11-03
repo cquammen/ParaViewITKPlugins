@@ -114,21 +114,24 @@ void vtkITKImageFilter::Init()
 //----------------------------------------------------------------------------
 int vtkITKImageFilter::BeforeUpdateInternalFilters(vtkInformationVector** inputVector)
 {
-  // Check that the inputs are of type vtkImageData
-  vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
-  vtkImageData *input = vtkImageData::SafeDownCast
-    (inInfo->Get(vtkDataObject::DATA_OBJECT()));
-  if(!input)
+  for (int i = 0; i < this->GetNumberOfInputPorts(); i++)
     {
-    vtkErrorMacro("An input is not of type vtkImageData");
-    return 0;
+    // Check that the inputs are of type vtkImageData
+    vtkInformation *inInfo = inputVector[i]->GetInformationObject(0);
+    vtkImageData *input = vtkImageData::SafeDownCast
+      (inInfo->Get(vtkDataObject::DATA_OBJECT()));
+    if(!input)
+      {
+      vtkErrorMacro("An input is not of type vtkImageData");
+      return 0;
+      }
+
+    this->VTKCaster->SetInput(input);
+    this->VTKCaster->Update();
+
+    // Hook up to the beginning of the ITK pipeline
+    this->VTKExporter->SetInput(this->VTKCaster->GetOutput());
     }
-
-  this->VTKCaster->SetInput(input);
-  this->VTKCaster->Update();
-
-  // Hook up to the beginning of the ITK pipeline
-  this->VTKExporter->SetInput(this->VTKCaster->GetOutput());
 
   return 1;
 }
