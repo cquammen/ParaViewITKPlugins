@@ -1,73 +1,48 @@
 #ifndef __vtkHessian3DToVesselnessMeasureImageFilter_h
 #define __vtkHessian3DToVesselnessMeasureImageFilter_h
 
-#include <vtkImageAlgorithm.h>
+#include <vtkITKImageFilter.h>
 
-#include <itkVTKImageImport.h>
-#include <itkVTKImageExport.h>
-#include <itkImage.h>
 #include <itkHessianRecursiveGaussianImageFilter.h>
 #include <itkHessian3DToVesselnessMeasureImageFilter.h>
-#include <itkImageRegionIteratorWithIndex.h>
 
-class vtkImageExport;
-class vtkImageImport;
-
-class VTK_EXPORT vtkHessian3DToVesselnessMeasureImageFilter : public vtkImageAlgorithm
+class VTK_EXPORT vtkHessian3DToVesselnessMeasureImageFilter : public vtkITKImageFilter
 {
 public:
 
-  //BTX
-  typedef float
-    PixelType;
-  typedef itk::Image< PixelType, 3 >
-    ITKImageType;
-  typedef itk::VTKImageImport< ITKImageType >
-    ITKImageImportType;
-  typedef itk::VTKImageExport< ITKImageType >
-    ITKImageExportType;
-  typedef itk::Hessian3DToVesselnessMeasureImageFilter< float >
-    ITKHessian3DToVesselnessMeasureImageFilterType;
-  typedef itk::HessianRecursiveGaussianImageFilter< ITKImageType >
-	ITKHessianRecursiveGaussianImageFilterType;
-  //ETX
-
   static vtkHessian3DToVesselnessMeasureImageFilter* New();
-  vtkTypeMacro(vtkHessian3DToVesselnessMeasureImageFilter, vtkImageAlgorithm);
+  vtkTypeMacro(vtkHessian3DToVesselnessMeasureImageFilter, vtkITKImageFilter);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  //void SetStandardDeviation(double sigma0, double sigma1, double sigma2);
-  //void SetStandardDeviation(double sigma[3]);
+  //BTX
+  typedef Superclass::PixelType             PixelType;
+  typedef Superclass::ITKImageType          ITKImageType;
+  typedef Superclass::ITKInternalFilterType ITKInternalFilterType;
+  typedef Superclass::ITKImageImportType    ITKImageImportType;
+  typedef Superclass::ITKImageExportType    ITKImageExportType;
+  typedef itk::HessianRecursiveGaussianImageFilter< ITKImageType >
+    ITKHessianRecursiveGaussianImageFilterType;
+  typedef itk::Hessian3DToVesselnessMeasureImageFilter< float >
+    ITKHessian3DToVesselnessMeasureImageFilterType;
+  //ETX
 
-  vtkSetMacro(SigmaValue, double);
-  vtkGetMacro(SigmaValue, double);
+  vtkSetMacro(Sigma, double);
+  vtkGetMacro(Sigma, double);
 
 
 protected:
   vtkHessian3DToVesselnessMeasureImageFilter();
   ~vtkHessian3DToVesselnessMeasureImageFilter();
 
-  double SigmaValue;
+  double Sigma;
 
-  vtkImageExport*                VTKExporter;
   //BTX
-  ITKImageImportType::Pointer    ITKImporter;
   ITKHessian3DToVesselnessMeasureImageFilterType::Pointer   Hessian3DTVMIFilter;
   ITKHessianRecursiveGaussianImageFilterType::Pointer HessianRGIFilter;
-  ITKImageExportType::Pointer    ITKExporter;
   //ETX
-  vtkImageImport*                VTKImporter;
 
 protected:
-  void InitializeITKImporter();
-  void InitializeITKExporter();
-
-  int RequestData(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector);
-
-  //BTX
-  template <class T>
-  void RunITKPipeline(const T *input);
-  //ETX
+  int UpdateInternalFilters();
 
 private:
   vtkHessian3DToVesselnessMeasureImageFilter(const vtkHessian3DToVesselnessMeasureImageFilter&);  // Not implemented.

@@ -25,7 +25,7 @@
       <IntVectorProperty
          name="Sigma"
          label="Sigma"
-         command="SetSigmaValue"
+         command="SetSigma"
          number_of_elements="1"
          default_values="1" >
          <Documentation>
