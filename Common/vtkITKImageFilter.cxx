@@ -149,9 +149,6 @@ int vtkITKImageFilter::BeforeUpdateInternalFilters(vtkInformationVector** inputV
 
     this->VTKCasters[i]->SetInput(input);
     this->VTKCasters[i]->Update();
-
-    // Hook up to the beginning of the ITK pipeline
-    //this->VTKExporters[i]->SetInput(this->VTKCasters[i]->GetOutput());
     }
 
   return 1;
