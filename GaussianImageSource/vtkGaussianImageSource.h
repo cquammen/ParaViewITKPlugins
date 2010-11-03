@@ -23,35 +23,27 @@
 #ifndef __vtkGaussianImageSource_h
 #define __vtkGaussianImageSource_h
 
-#include <vtkImageAlgorithm.h>
+#include <vtkITKImageFilter.h>
 
-#include <itkVTKImageImport.h>
-#include <itkVTKImageExport.h>
 #include <itkGaussianImageSource.h>
 
-class vtkImageExport;
-class vtkImageImport;
-
-class VTK_EXPORT vtkGaussianImageSource : public vtkImageAlgorithm
+class VTK_EXPORT vtkGaussianImageSource : public vtkITKImageFilter
 {
 public:
 
+  static vtkGaussianImageSource* New();
+  vtkTypeMacro(vtkGaussianImageSource, vtkITKImageFilter);
+  void PrintSelf(ostream& os, vtkIndent indent);
+
   //BTX
-  typedef float
-    PixelType;
-  typedef itk::Image< PixelType, 3 >
-    ITKImageType;
-  typedef itk::VTKImageImport< ITKImageType >
-    ITKImageImportType;
-  typedef itk::VTKImageExport< ITKImageType >
-    ITKImageExportType;
+  typedef Superclass::PixelType             PixelType;
+  typedef Superclass::ITKImageType          ITKImageType;
+  typedef Superclass::ITKInternalFilterType ITKInternalFilterType;
+  typedef Superclass::ITKImageImportType    ITKImageImportType;
+  typedef Superclass::ITKImageExportType    ITKImageExportType;
   typedef itk::GaussianImageSource< ITKImageType >
     ITKGaussianSourceType;
   //ETX
-
-  static vtkGaussianImageSource* New();
-  vtkTypeMacro(vtkGaussianImageSource, vtkImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
 
   // Set/get image size.
   vtkSetVector3Macro(Size, int);
@@ -80,21 +72,13 @@ protected:
 
   //BTX
   ITKGaussianSourceType::Pointer GaussianSource;
-  ITKImageExportType::Pointer    ITKExporter;
   //ETX
-  vtkImageImport*                VTKImporter;
 
 protected:
-  void InitializeITKImporter();
-  void InitializeITKExporter();
-
   virtual int RequestInformation (vtkInformation *, vtkInformationVector**, vtkInformationVector *);
-  virtual int RequestData(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector);
+  //virtual int RequestData(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector);
 
-  //BTX
-  template <class T>
-  void RunITKPipeline(const T *input);
-  //ETX
+  int UpdateInternalFilters();
 
 private:
   vtkGaussianImageSource(const vtkGaussianImageSource&);  // Not implemented.

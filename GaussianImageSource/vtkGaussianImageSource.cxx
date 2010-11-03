@@ -14,7 +14,6 @@
 =========================================================================*/
 #include "vtkGaussianImageSource.h"
 
-
 #include "vtkObjectFactory.h"
 #include "vtkImageExport.h"
 #include "vtkImageImport.h"
@@ -24,15 +23,18 @@
 #include "vtkPointData.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 
-#include "vtkImageShiftScale.h"
 
 vtkStandardNewMacro(vtkGaussianImageSource);
 
 //----------------------------------------------------------------------------
 vtkGaussianImageSource::vtkGaussianImageSource()
 {
+  // Set up number of input and output ports
   this->SetNumberOfInputPorts(0);
   this->SetNumberOfOutputPorts(1);
+
+  // Initialize the ITK-VTK glue.
+  this->Init();
 
   for (unsigned int i = 0; i < 3; i++)
     {
@@ -43,40 +45,15 @@ vtkGaussianImageSource::vtkGaussianImageSource()
     }
 
   this->GaussianSource = ITKGaussianSourceType::New();
-  this->ITKExporter = ITKImageExportType::New();
-  this->VTKImporter = vtkImageImport::New();
-  this->VTKImporter->SetScalarArrayName("GaussianFunction");
 
-  this->InitializeITKExporter();
+  // Set the first and last filters in the internal ITK pipeline.
+  //this->SetITKPipelineFirstFilter<ITKInternalFilterType>(this->GaussianSource);
+  this->SetITKPipelineLastFilter<ITKGaussianSourceType>(this->GaussianSource);
 }
 
 //----------------------------------------------------------------------------
 vtkGaussianImageSource::~vtkGaussianImageSource()
 {
-  if (this->VTKImporter)
-    {
-      this->VTKImporter->Delete();
-    }
-}
-
-//----------------------------------------------------------------------------
-void vtkGaussianImageSource::InitializeITKExporter()
-{
-  // This call takes the place of the usual SetInput() method.
-  this->VTKImporter->SetCallbackUserData(ITKExporter->GetCallbackUserData());
-
-  // Set the rest of the callbacks
-  this->VTKImporter->SetUpdateInformationCallback(ITKExporter->GetUpdateInformationCallback());
-  this->VTKImporter->SetPipelineModifiedCallback(ITKExporter->GetPipelineModifiedCallback());
-  this->VTKImporter->SetWholeExtentCallback(ITKExporter->GetWholeExtentCallback());
-  this->VTKImporter->SetSpacingCallback(ITKExporter->GetSpacingCallback());
-  this->VTKImporter->SetOriginCallback(ITKExporter->GetOriginCallback());
-  this->VTKImporter->SetScalarTypeCallback(ITKExporter->GetScalarTypeCallback());
-  this->VTKImporter->SetNumberOfComponentsCallback(ITKExporter->GetNumberOfComponentsCallback());
-  this->VTKImporter->SetPropagateUpdateExtentCallback(ITKExporter->GetPropagateUpdateExtentCallback());
-  this->VTKImporter->SetUpdateDataCallback(ITKExporter->GetUpdateDataCallback());
-  this->VTKImporter->SetDataExtentCallback(ITKExporter->GetDataExtentCallback());
-  this->VTKImporter->SetBufferPointerCallback(ITKExporter->GetBufferPointerCallback());
 }
 
 //----------------------------------------------------------------------------
@@ -102,51 +79,23 @@ int vtkGaussianImageSource::RequestInformation (
 }
 
 //----------------------------------------------------------------------------
-int vtkGaussianImageSource::RequestData(vtkInformation *request,
-                                        vtkInformationVector **inputVector,
-                                        vtkInformationVector *outputVector)
+int vtkGaussianImageSource::UpdateInternalFilters()
 {
-  try
+  // Set up ITK pipeline settings here
+  ITKGaussianSourceType::SizeType size;
+  ITKGaussianSourceType::ArrayType sigma;
+  for (unsigned int i = 0; i < 3; i++)
     {
-
-    // Set up ITK pipeline settings here
-    ITKGaussianSourceType::SizeType size;
-    ITKGaussianSourceType::ArrayType sigma;
-    for (unsigned int i = 0; i < 3; i++)
-      {
-      size[i]  = static_cast<ITKGaussianSourceType::SizeValueType>
-        (this->Size[i]);
-      sigma[i] = static_cast<ITKGaussianSourceType::ArrayType::ValueType>
-        (this->StandardDeviation[i]);
-      }
-    this->GaussianSource->SetSize(size);
-    this->GaussianSource->SetOrigin(this->Origin);
-    this->GaussianSource->SetMean(this->Mean);
-    this->GaussianSource->SetSigma(sigma);
-    this->GaussianSource->Update();
-
-    // Now connect the ITK pipeline output to the VTK output
-    this->ITKExporter->SetInput(this->GaussianSource->GetOutput());
-    this->ITKExporter->Update();
-
-    vtkInformation *outInfo = outputVector->GetInformationObject(0);
-    vtkImageData *output = vtkImageData::SafeDownCast
-      (outInfo->Get(vtkDataObject::DATA_OBJECT()));
-    if (!output)
-      {
-      vtkErrorMacro("Output is not of type vtkImageData");
-      return 0;
-      }
-
-    this->VTKImporter->Update();
-    this->VTKImporter->Update();
-
-    output->ShallowCopy(this->VTKImporter->GetOutput());
+    size[i]  = static_cast<ITKGaussianSourceType::SizeValueType>
+      (this->Size[i]);
+    sigma[i] = static_cast<ITKGaussianSourceType::ArrayType::ValueType>
+      (this->StandardDeviation[i]);
     }
-  catch(itk::ExceptionObject& error)
-    {
-    vtkErrorMacro(<< "Exception caught when running ITK filter." );
-    }
+  this->GaussianSource->SetSize(size);
+  this->GaussianSource->SetOrigin(this->Origin);
+  this->GaussianSource->SetMean(this->Mean);
+  this->GaussianSource->SetSigma(sigma);
+  this->GaussianSource->Update();
 
   return 1;
 }
