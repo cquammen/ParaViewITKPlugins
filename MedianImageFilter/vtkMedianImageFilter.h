@@ -55,7 +55,9 @@ protected:
 
   int NeighborhoodRadius[3];
 
+  //BTX
   ITKMedianFilterType::Pointer   MedianFilter;
+  //ETX
 
 protected:
   int UpdateInternalFilters();

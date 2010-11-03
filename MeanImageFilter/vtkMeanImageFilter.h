@@ -54,7 +54,9 @@ protected:
 
   int NeighborhoodRadius[3];
 
+  //BTX
   ITKMeanFilterType::Pointer MeanFilter;
+  //ETX
 
 protected:
   int UpdateInternalFilters();

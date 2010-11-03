@@ -54,7 +54,9 @@ protected:
 
   double Sigma;
 
+  //BTX
   ITKLOGFilterType::Pointer		 LOGFilter;
+  //ETX
 
 protected:
   int UpdateInternalFilters();
