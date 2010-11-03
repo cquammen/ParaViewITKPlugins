@@ -23,38 +23,27 @@
 #ifndef __vtkGaussianBlurImageFilter_h
 #define __vtkGaussianBlurImageFilter_h
 
-#include <vtkImageAlgorithm.h>
+#include <vtkITKImageFilter.h>
 
-#include <itkVTKImageImport.h>
-#include <itkVTKImageExport.h>
 #include <itkDiscreteGaussianImageFilter.h>
 
-class vtkImageExport;
-class vtkImageImport;
-
-class VTK_EXPORT vtkGaussianBlurImageFilter : public vtkImageAlgorithm
+class VTK_EXPORT vtkGaussianBlurImageFilter : public vtkITKImageFilter
 {
 public:
 
+  static vtkGaussianBlurImageFilter* New();
+  vtkTypeMacro(vtkGaussianBlurImageFilter, vtkITKImageFilter);
+  void PrintSelf(ostream& os, vtkIndent indent);
+
   //BTX
-  typedef float
-    PixelType;
-  typedef itk::Image< PixelType, 3 >
-    ITKImageType;
-  typedef itk::VTKImageImport< ITKImageType >
-    ITKImageImportType;
-  typedef itk::VTKImageExport< ITKImageType >
-    ITKImageExportType;
+  typedef Superclass::PixelType             PixelType;
+  typedef Superclass::ITKImageType          ITKImageType;
+  typedef Superclass::ITKInternalFilterType ITKInternalFilterType;
+  typedef Superclass::ITKImageImportType    ITKImageImportType;
+  typedef Superclass::ITKImageExportType    ITKImageExportType;
   typedef itk::DiscreteGaussianImageFilter< ITKImageType, ITKImageType >
     ITKGaussianFilterType;
   //ETX
-
-  static vtkGaussianBlurImageFilter* New();
-  vtkTypeMacro(vtkGaussianBlurImageFilter, vtkImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
-
-  //void SetStandardDeviation(double sigma0, double sigma1, double sigma2);
-  //void SetStandardDeviation(double sigma[3]);
 
   vtkSetVector3Macro(StandardDeviation, double);
   vtkGetVector3Macro(StandardDeviation, double);
@@ -65,24 +54,10 @@ protected:
 
   double StandardDeviation[3];
 
-  vtkImageExport*                VTKExporter;
-  //BTX
-  ITKImageImportType::Pointer    ITKImporter;
   ITKGaussianFilterType::Pointer GaussianFilter;
-  ITKImageExportType::Pointer    ITKExporter;
-  //ETX
-  vtkImageImport*                VTKImporter;
 
 protected:
-  void InitializeITKImporter();
-  void InitializeITKExporter();
-
-  int RequestData(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector);
-
-  //BTX
-  template <class T>
-  void RunITKPipeline(const T *input);
-  //ETX
+  int UpdateInternalFilters();
 
 private:
   vtkGaussianBlurImageFilter(const vtkGaussianBlurImageFilter&);  // Not implemented.
