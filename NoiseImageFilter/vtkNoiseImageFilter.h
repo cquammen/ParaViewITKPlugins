@@ -23,29 +23,25 @@
 #ifndef __vtkNoiseImageFilter_h
 #define __vtkNoiseImageFilter_h
 
-#include <vtkImageAlgorithm.h>
+#include <vtkITKImageFilter.h>
 
-#include <itkVTKImageImport.h>
-#include <itkVTKImageExport.h>
 #include <itkAdditiveGaussianNoiseImageFilter.h>
 #include <itkShotNoiseImageFilter.h>
 
-class vtkImageExport;
-class vtkImageImport;
-
-class VTK_EXPORT vtkNoiseImageFilter : public vtkImageAlgorithm
+class VTK_EXPORT vtkNoiseImageFilter : public vtkITKImageFilter
 {
 public:
 
+  static vtkNoiseImageFilter* New();
+  vtkTypeMacro(vtkNoiseImageFilter, vtkITKImageFilter);
+  void PrintSelf(ostream& os, vtkIndent indent);
+
   //BTX
-  typedef float
-    PixelType;
-  typedef itk::Image< PixelType, 3 >
-    ITKImageType;
-  typedef itk::VTKImageImport< ITKImageType >
-    ITKImageImportType;
-  typedef itk::VTKImageExport< ITKImageType >
-    ITKImageExportType;
+  typedef Superclass::PixelType             PixelType;
+  typedef Superclass::ITKImageType          ITKImageType;
+  typedef Superclass::ITKInternalFilterType ITKInternalFilterType;
+  typedef Superclass::ITKImageImportType    ITKImageImportType;
+  typedef Superclass::ITKImageExportType    ITKImageExportType;
   typedef itk::AdditiveGaussianNoiseImageFilter< ITKImageType, ITKImageType >
     ITKGaussianNoiseFilterType;
   typedef itk::ShotNoiseImageFilter< ITKImageType, ITKImageType >
@@ -56,10 +52,6 @@ public:
     POISSON_NOISE  = 1
   };
   //ETX
-
-  static vtkNoiseImageFilter* New();
-  vtkTypeMacro(vtkNoiseImageFilter, vtkImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
 
   // Set/get the noise type
   vtkSetMacro(NoiseType, int);
@@ -82,25 +74,11 @@ protected:
   double Mean;
   double StandardDeviation;
 
-  vtkImageExport*                VTKExporter;
-  //BTX
-  ITKImageImportType::Pointer         ITKImporter;
   ITKGaussianNoiseFilterType::Pointer GaussianNoiseFilter;
   ITKPoissonNoiseFilterType::Pointer  PoissonNoiseFilter;
-  ITKImageExportType::Pointer         ITKExporter;
-  //ETX
-  vtkImageImport*                VTKImporter;
 
 protected:
-  void InitializeITKImporter();
-  void InitializeITKExporter();
-
-  int RequestData(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector);
-
-  //BTX
-  template <class T>
-  void RunITKPipeline(const T *input);
-  //ETX
+  int UpdateInternalFilters();
 
 private:
   vtkNoiseImageFilter(const vtkNoiseImageFilter&);  // Not implemented.

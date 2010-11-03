@@ -4,7 +4,7 @@
        a filter already in ParaView (in Servers/ServerManager/Resources/*.xml)
        that matches your filter and then model your xml on it -->
   <ProxyGroup name="filters">
-   <SourceProxy name="Otsu Filter" class="vtkOtsuThresholdImageFilter" label="Otsu Filter">
+   <SourceProxy name="OtsuThresholdImageFilter" class="vtkOtsuThresholdImageFilter" label="Otsu Threshold Image Filter">
      <Documentation
         long_help="Apply Otsu thresholding to the image."
         short_help=".">
@@ -23,7 +23,7 @@
       </InputProperty>
 
 
-     
+
 
    <!-- End GaussianImageFilter -->
    </SourceProxy>
