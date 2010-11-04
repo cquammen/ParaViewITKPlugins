@@ -4,7 +4,7 @@
        a filter already in ParaView (in Servers/ServerManager/Resources/*.xml)
        that matches your filter and then model your xml on it -->
   <ProxyGroup name="filters">
-   <SourceProxy name="PoissonMaximumAPosterioriDeconvolutionImageFilter" class="vtkPoissonMaximumAPosterioriDeconvolutionImageFilter" label="PoissonMaximumAPosteriori Deconvolution Filter">
+   <SourceProxy name="PoissonMaximumAPosterioriDeconvolutionImageFilter" class="vtkPoissonMaximumAPosterioriDeconvolutionImageFilter" label="Poisson Maximum A Posteriori Deconvolution Filter">
      <Documentation
         long_help="Use PoissonMaximumAPosteriori deconvolution to restore the image."
         short_help=".">

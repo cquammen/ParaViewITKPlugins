@@ -4,7 +4,7 @@
        a filter already in ParaView (in Servers/ServerManager/Resources/*.xml)
        that matches your filter and then model your xml on it -->
   <ProxyGroup name="filters">
-   <SourceProxy name="VanCittertDeconvolutionImageFilter" class="vtkVanCittertDeconvolutionImageFilter" label="VanCittert Deconvolution Filter">
+   <SourceProxy name="VanCittertDeconvolutionImageFilter" class="vtkVanCittertDeconvolutionImageFilter" label="Van Cittert Deconvolution Filter">
      <Documentation
         long_help="Use VanCittert deconvolution to restore the image."
         short_help=".">

@@ -4,7 +4,7 @@
        a filter already in ParaView (in Servers/ServerManager/Resources/*.xml)
        that matches your filter and then model your xml on it -->
   <ProxyGroup name="filters">
-   <SourceProxy name="TikhonovMillerRichardsonLucyDeconvolutionImageFilter" class="vtkTikhonovMillerRichardsonLucyDeconvolutionImageFilter" label="TikhonovMillerRichardsonLucy Deconvolution Filter">
+   <SourceProxy name="TikhonovMillerRichardsonLucyDeconvolutionImageFilter" class="vtkTikhonovMillerRichardsonLucyDeconvolutionImageFilter" label="Tikhonov-Miller Richardson-Lucy Deconvolution Filter">
      <Documentation
         long_help="Use TikhonovMillerRichardsonLucy deconvolution to restore the image."
         short_help=".">
