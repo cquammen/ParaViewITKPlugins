@@ -41,6 +41,9 @@ ADD_SUBDIRECTORY( MedianImageFilter )
 ADD_SUBDIRECTORY( MeanImageFilter )
 ADD_SUBDIRECTORY( OtsuThresholdImageFilter )
 ADD_SUBDIRECTORY( Hessian3DToVesselnessMeasureImageFilter)
+ADD_SUBDIRECTORY( BinaryThinningImageFilter )
+ADD_SUBDIRECTORY( MultiScaleObjectnessFilter )
+
 
 # These plugin does not currently compile on Windows
 IF( NOT WIN32 )
