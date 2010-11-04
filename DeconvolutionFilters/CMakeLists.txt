@@ -1,8 +1,26 @@
+SET( DECONVOLUTION_PLUGINS
+  AdaptivelyAcceleratedRichardsonLucyDeconvolutionImageFilter
+  DampedRichardsonLucyDeconvolutionImageFilter
+  JanssonVanCittertDeconvolutionImageFilter
+  LandweberDeconvolutionImageFilter
+  MaximumAPosterioriLeastSquaresDeconvolutionImageFilter
+  MaximumEntropyRichardsonLucyDeconvolutionImageFilter
+  PoissonMaximumAPosterioriDeconvolutionImageFilter
+  RegularizedLeastSquaresDeconvolutionImageFilter
+  RichardsonLucyDeconvolutionImageFilter
+  TikhonovMillerDeconvolutionImageFilter
+  TikhonovMillerRichardsonLucyDeconvolutionImageFilter
+  VanCittertDeconvolutionImageFilter
+  WienerDeconvolutionImageFilter
+)
+
+
 INCLUDE_DIRECTORIES( ${ParaViewITKPlugins_SOURCE_DIR}/InsightJournal/deconv )
 INCLUDE_DIRECTORIES( ${ParaViewITKPlugins_SOURCE_DIR}/InsightJournal/fftconv )
 
 SET( ParaViewITKPluginsDeconvolutionSrcs
   vtkDeconvolutionImageFilter.cxx
+  vtkIterativeDeconvolutionImageFilter.cxx
 )
 VTK_WRAP_ClientServer("DeconvolutionImageFilter"
   WrappedSrcs "${ParaViewITKPluginsDeconvolutionSrcs}")
@@ -33,12 +51,6 @@ SET( LINK_LIBRARIES
   ParaViewITKPluginsDeconvolution
 )
 
-SET( DECONVOLUTION_PLUGINS
-  RegularizedLeastSquaresDeconvolutionImageFilter
-  TikhonovMillerDeconvolutionImageFilter
-  WienerDeconvolutionImageFilter
-)
-
 FOREACH( PLUGIN ${DECONVOLUTION_PLUGINS} )
 
   SET(XML "${PLUGIN}.xml")
@@ -46,6 +58,7 @@ FOREACH( PLUGIN ${DECONVOLUTION_PLUGINS} )
     SERVER_MANAGER_XML ${XML}
     SERVER_MANAGER_SOURCES "vtk${PLUGIN}.cxx"
     SOURCES ${XML}
+    GUI_RESOURCE_FILES "Categories.xml"
     )
 
   INSTALL(TARGETS ${PLUGIN}

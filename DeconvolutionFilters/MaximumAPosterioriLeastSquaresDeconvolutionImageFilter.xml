@@ -4,9 +4,9 @@
        a filter already in ParaView (in Servers/ServerManager/Resources/*.xml)
        that matches your filter and then model your xml on it -->
   <ProxyGroup name="filters">
-   <SourceProxy name="RegularizedLeastSquaresDeconvolutionImageFilter" class="vtkRegularizedLeastSquaresDeconvolutionImageFilter" label="Regularized Least Squares Deconvolution Filter">
+   <SourceProxy name="MaximumAPosterioriLeastSquaresDeconvolutionImageFilter" class="vtkMaximumAPosterioriLeastSquaresDeconvolutionImageFilter" label="Maximum A Posteriori Least Squares Deconvolution Filter">
      <Documentation
-        long_help="Use RegularizedLeastSquares deconvolution to restore the image."
+        long_help="Use MaximumAPosterioriLeastSquares deconvolution to restore the image."
         short_help=".">
           Put some text describing the filter here.
      </Documentation>
@@ -53,12 +53,12 @@
      </IntVectorProperty>
 
      <DoubleVectorProperty
-        name="Regularization Weight"
+        name="Alpha"
         command="SetAlpha"
         number_of_elements="1"
         default_values="0.01" >
        <Documentation>
-         Set the regularization weight. If set to 0, the solution is unregularized.
+         Alpha is a regularization parameter. Higher values produce smoother images.
        </Documentation>
      </DoubleVectorProperty>
 
