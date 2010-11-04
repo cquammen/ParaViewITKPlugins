@@ -69,16 +69,7 @@ void
 FFTConvolutionImageFilterBase<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>
 ::GenerateOutputInformation()
 {
-  // call the implementation from FFTPad if the output shouldn't be cropped, and the one
-  // from ImageToImageFilter if the output should be cropped
-  if( m_CropOutput )
-    {
-    Superclass::Superclass::GenerateOutputInformation();
-    }
-  else
-    {
-    Superclass::GenerateOutputInformation();
-    }
+  Superclass::GenerateOutputInformation();
 }
 
 template<class TInputImage, class TKernelImage, class TOutputImage, class TInternalPrecision>
