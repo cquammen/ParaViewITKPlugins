@@ -41,6 +41,7 @@ vtkPoissonMaximumAPosterioriDeconvolutionImageFilter::~vtkPoissonMaximumAPosteri
 int vtkPoissonMaximumAPosterioriDeconvolutionImageFilter::UpdateInternalFilters()
 {
   this->ITKDeconvolutionFilter->SetPadMethod(this->PaddingMethod);
+  this->ITKDeconvolutionFilter->SetNumberOfIterations(this->NumberOfIterations);
   this->ITKDeconvolutionFilter->Update();
 
   return 1;

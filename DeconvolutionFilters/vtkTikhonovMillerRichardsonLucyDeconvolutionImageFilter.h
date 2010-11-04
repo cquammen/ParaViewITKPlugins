@@ -45,9 +45,15 @@ public:
     ITKDeconvolutionFilterType;
   //ETX
 
+  // Set/get the regularization parameter Lambda
+  vtkSetMacro(Lambda, double);
+  vtkGetMacro(Lambda, double);
+
 protected:
   vtkTikhonovMillerRichardsonLucyDeconvolutionImageFilter();
   ~vtkTikhonovMillerRichardsonLucyDeconvolutionImageFilter();
+
+  double Lambda;
 
   //BTX
   ITKDeconvolutionFilterType::Pointer ITKDeconvolutionFilter;

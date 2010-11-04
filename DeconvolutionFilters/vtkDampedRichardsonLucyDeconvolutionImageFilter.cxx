@@ -41,6 +41,7 @@ vtkDampedRichardsonLucyDeconvolutionImageFilter::~vtkDampedRichardsonLucyDeconvo
 int vtkDampedRichardsonLucyDeconvolutionImageFilter::UpdateInternalFilters()
 {
   this->ITKDeconvolutionFilter->SetPadMethod(this->PaddingMethod);
+  this->ITKDeconvolutionFilter->SetNumberOfIterations(this->NumberOfIterations);
   this->ITKDeconvolutionFilter->SetThreshold(this->Threshold);
   this->ITKDeconvolutionFilter->Update();
 

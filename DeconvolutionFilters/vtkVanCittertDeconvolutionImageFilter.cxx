@@ -41,6 +41,9 @@ vtkVanCittertDeconvolutionImageFilter::~vtkVanCittertDeconvolutionImageFilter()
 int vtkVanCittertDeconvolutionImageFilter::UpdateInternalFilters()
 {
   this->ITKDeconvolutionFilter->SetPadMethod(this->PaddingMethod);
+  this->ITKDeconvolutionFilter->SetNumberOfIterations(this->NumberOfIterations);
+  this->ITKDeconvolutionFilter->SetAlpha(this->Alpha);
+  this->ITKDeconvolutionFilter->SetNonNegativity(this->NonNegativity);
   this->ITKDeconvolutionFilter->Update();
 
   return 1;

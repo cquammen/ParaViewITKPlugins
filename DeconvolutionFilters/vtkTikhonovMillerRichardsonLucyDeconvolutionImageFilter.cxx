@@ -41,6 +41,8 @@ vtkTikhonovMillerRichardsonLucyDeconvolutionImageFilter::~vtkTikhonovMillerRicha
 int vtkTikhonovMillerRichardsonLucyDeconvolutionImageFilter::UpdateInternalFilters()
 {
   this->ITKDeconvolutionFilter->SetPadMethod(this->PaddingMethod);
+  this->ITKDeconvolutionFilter->SetNumberOfIterations(this->NumberOfIterations);
+  this->ITKDeconvolutionFilter->SetLambda(this->Lambda);
   this->ITKDeconvolutionFilter->Update();
 
   return 1;

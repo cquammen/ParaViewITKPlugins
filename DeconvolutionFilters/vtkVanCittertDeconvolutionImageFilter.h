@@ -45,9 +45,21 @@ public:
     ITKDeconvolutionFilterType;
   //ETX
 
+  // Set/get regularization parameter Alpha.
+  vtkSetMacro(Alpha, double);
+  vtkGetMacro(Alpha, double);
+
+  // Set/get enforcement of non-negativity constraint.
+  vtkSetMacro(NonNegativity, bool);
+  vtkGetMacro(NonNegativity, bool);
+  vtkBooleanMacro(NonNegativity, bool);
+
 protected:
   vtkVanCittertDeconvolutionImageFilter();
   ~vtkVanCittertDeconvolutionImageFilter();
+
+  double Alpha;
+  bool   NonNegativity;
 
   //BTX
   ITKDeconvolutionFilterType::Pointer ITKDeconvolutionFilter;

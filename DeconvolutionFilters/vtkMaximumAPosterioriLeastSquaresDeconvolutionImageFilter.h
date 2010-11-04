@@ -23,16 +23,16 @@
 #ifndef __vtkMaximumAPosterioriLeastSquaresDeconvolutionImageFilter_h
 #define __vtkMaximumAPosterioriLeastSquaresDeconvolutionImageFilter_h
 
-#include <vtkIterativeDeconvolutionImageFilter.h>
+#include <vtkDeconvolutionImageFilter.h>
 
 #include <itkMaximumAPosterioriLeastSquaresDeconvolutionImageFilter.h>
 
-class VTK_EXPORT vtkMaximumAPosterioriLeastSquaresDeconvolutionImageFilter : public vtkIterativeDeconvolutionImageFilter
+class VTK_EXPORT vtkMaximumAPosterioriLeastSquaresDeconvolutionImageFilter : public vtkDeconvolutionImageFilter
 {
 public:
 
   static vtkMaximumAPosterioriLeastSquaresDeconvolutionImageFilter* New();
-  vtkTypeMacro(vtkMaximumAPosterioriLeastSquaresDeconvolutionImageFilter, vtkIterativeDeconvolutionImageFilter);
+  vtkTypeMacro(vtkMaximumAPosterioriLeastSquaresDeconvolutionImageFilter, vtkDeconvolutionImageFilter);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   //BTX
@@ -45,9 +45,15 @@ public:
     ITKDeconvolutionFilterType;
   //ETX
 
+  // Set/get the regularization parameter Alpha
+  vtkSetMacro(Alpha, double);
+  vtkGetMacro(Alpha, double);
+
 protected:
   vtkMaximumAPosterioriLeastSquaresDeconvolutionImageFilter();
   ~vtkMaximumAPosterioriLeastSquaresDeconvolutionImageFilter();
+
+  double Alpha;
 
   //BTX
   ITKDeconvolutionFilterType::Pointer ITKDeconvolutionFilter;

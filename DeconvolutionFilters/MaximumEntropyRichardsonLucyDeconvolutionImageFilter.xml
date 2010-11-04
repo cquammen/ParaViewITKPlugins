@@ -62,6 +62,16 @@
        </Documentation>
      </IntVectorProperty>
 
+     <DoubleVectorProperty
+        name="Lambda"
+        command="SetLambda"
+        number_of_elements="1"
+        default_values="0.01" >
+       <Documentation>
+         Lambda is a regularization parameter. Higher values produce smoother images.
+       </Documentation>
+     </DoubleVectorProperty>
+
    <!-- End filter -->
    </SourceProxy>
  </ProxyGroup>

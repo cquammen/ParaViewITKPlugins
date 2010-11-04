@@ -41,6 +41,7 @@ vtkMaximumAPosterioriLeastSquaresDeconvolutionImageFilter::~vtkMaximumAPosterior
 int vtkMaximumAPosterioriLeastSquaresDeconvolutionImageFilter::UpdateInternalFilters()
 {
   this->ITKDeconvolutionFilter->SetPadMethod(this->PaddingMethod);
+  this->ITKDeconvolutionFilter->SetAlpha(this->Alpha);
   this->ITKDeconvolutionFilter->Update();
 
   return 1;

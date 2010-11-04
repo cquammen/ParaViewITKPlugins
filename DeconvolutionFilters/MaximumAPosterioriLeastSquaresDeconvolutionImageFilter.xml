@@ -52,15 +52,15 @@
        </Documentation>
      </IntVectorProperty>
 
-     <IntVectorProperty
-        name="Maximum Number of Iterations"
-        command="SetNumberOfIterations"
+     <DoubleVectorProperty
+        name="Alpha"
+        command="SetAlpha"
         number_of_elements="1"
-        default_values="10" >
+        default_values="0.01" >
        <Documentation>
-         Set the maximum number of iterations to execute.
+         Alpha is a regularization parameter. Higher values produce smoother images.
        </Documentation>
-     </IntVectorProperty>
+     </DoubleVectorProperty>
 
    <!-- End filter -->
    </SourceProxy>
