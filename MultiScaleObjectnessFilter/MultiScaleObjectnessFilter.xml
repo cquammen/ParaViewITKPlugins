@@ -1,0 +1,84 @@
+<ServerManagerConfiguration>
+  <!-- This is the server manager configuration XML. It defines the interface to
+       our new filter. As a rule of thumb, try to locate the configuration for
+       a filter already in ParaView (in Servers/ServerManager/Resources/*.xml)
+       that matches your filter and then model your xml on it -->
+  <ProxyGroup name="filters">
+   <SourceProxy name="Multi Scale Objectness Filter" class="vtkMultiScaleObjectnessFilter" label="Multi Scale Objectness Filter">
+     <Documentation
+        long_help="Apply Multi Scale Objectness Filter to the image."
+        short_help=".">
+          Put some text describing the filter here.
+     </Documentation>
+     <InputProperty
+        name="Input"
+        command="SetInputConnection">
+           <ProxyGroupDomain name="groups">
+             <Group name="sources"/>
+             <Group name="filters"/>
+           </ProxyGroupDomain>
+           <DataTypeDomain name="input_type">
+             <DataType value="vtkImageData"/>
+           </DataTypeDomain>
+      </InputProperty>
+
+     <DoubleVectorProperty
+        name="Alpha"
+        label="Alpha"
+        command="SetAlpha"
+        number_of_elements="1"
+        default_values="0.5" >
+     </DoubleVectorProperty>
+
+     <DoubleVectorProperty
+        name="Beta"
+        label="Beta"
+        command="SetBeta"
+        number_of_elements="1"
+        default_values="0.5" >
+     </DoubleVectorProperty>
+
+     <DoubleVectorProperty
+        name="Gamma"
+        label="Gamma"
+        command="SetGamma"
+        number_of_elements="1"
+        default_values="5.0" >
+     </DoubleVectorProperty>
+
+     <IntVectorProperty
+        name="Object Dimension"
+        label="Object Dimension"
+        command="SetObjectDim"
+        number_of_elements="1"
+        default_values="1" >
+     </IntVectorProperty>
+     
+     <DoubleVectorProperty
+        name="Maximum Sigma"
+        label="Maximum Sigma"
+        command="SetSigmaMax"
+        number_of_elements="1"
+        default_values="4.0" >
+     </DoubleVectorProperty>  
+   
+     <DoubleVectorProperty
+        name="Minimum Sigma"
+        label="Minimum Sigma"
+        command="SetSigmaMin"
+        number_of_elements="1"
+        default_values="0.5" >
+     </DoubleVectorProperty>
+
+     <IntVectorProperty
+        name="Number of Sigma Steps"
+        label="Number of Sigma Steps"
+        command="SetNoOfSigmaSteps"
+        number_of_elements="1"
+        default_values="10" >
+     </IntVectorProperty>     
+
+   <!-- End MultiScaleObjectness -->
+   </SourceProxy>
+ </ProxyGroup>
+</ServerManagerConfiguration>
