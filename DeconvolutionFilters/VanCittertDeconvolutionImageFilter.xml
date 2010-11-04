@@ -1,0 +1,68 @@
+<ServerManagerConfiguration>
+  <!-- This is the server manager configuration XML. It defines the interface to
+       our new filter. As a rule of thumb, try to locate the configuration for
+       a filter already in ParaView (in Servers/ServerManager/Resources/*.xml)
+       that matches your filter and then model your xml on it -->
+  <ProxyGroup name="filters">
+   <SourceProxy name="VanCittertDeconvolutionImageFilter" class="vtkVanCittertDeconvolutionImageFilter" label="VanCittert Deconvolution Filter">
+     <Documentation
+        long_help="Use VanCittert deconvolution to restore the image."
+        short_help=".">
+          Put some text describing the filter here.
+     </Documentation>
+     <InputProperty
+        name="Image to Deconvolve"
+        command="SetInputConnection">
+           <ProxyGroupDomain name="groups">
+             <Group name="sources"/>
+             <Group name="filters"/>
+           </ProxyGroupDomain>
+           <DataTypeDomain name="input_type">
+             <DataType value="vtkImageData"/>
+           </DataTypeDomain>
+      </InputProperty>
+     <InputProperty
+	name="Point-Spread Function"
+	command="SetKernelImage">
+       <ProxyGroupDomain name="groups">
+	 <Group name="sources"/>
+	 <Group name="filters"/>
+       </ProxyGroupDomain>
+       <DataTypeDomain name="input_type">
+	 <DataType value="vtkImageData"/>
+       </DataTypeDomain>
+       <Documentation>
+	 docs
+       </Documentation>
+     </InputProperty>
+
+     <IntVectorProperty
+        name="Border Padding Method"
+        command="SetPaddingMethod"
+        number_of_elements="1"
+        default_values="1" >
+       <EnumerationDomain name="enum">
+         <Entry value="1" text="Zero-flux Neumann"/>
+         <Entry value="2" text="Zero"/>
+         <Entry value="3" text="Mirror"/>
+         <Entry value="4" text="Wrap"/>
+       </EnumerationDomain>
+       <Documentation>
+         Choose which type of padding method should be used to reduce boundary effects.
+       </Documentation>
+     </IntVectorProperty>
+
+     <IntVectorProperty
+        name="Maximum Number of Iterations"
+        command="SetNumberOfIterations"
+        number_of_elements="1"
+        default_values="10" >
+       <Documentation>
+         Set the maximum number of iterations to execute.
+       </Documentation>
+     </IntVectorProperty>
+
+   <!-- End filter -->
+   </SourceProxy>
+ </ProxyGroup>
+</ServerManagerConfiguration>

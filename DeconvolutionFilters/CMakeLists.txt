@@ -1,8 +1,26 @@
+SET( DECONVOLUTION_PLUGINS
+  AdaptivelyAcceleratedRichardsonLucyDeconvolutionImageFilter
+  DampedRichardsonLucyDeconvolutionImageFilter
+  JanssonVanCittertDeconvolutionImageFilter
+  LandweberDeconvolutionImageFilter
+  MaximumAPosterioriLeastSquaresDeconvolutionImageFilter
+  MaximumEntropyRichardsonLucyDeconvolutionImageFilter
+  PoissonMaximumAPosterioriDeconvolutionImageFilter
+  RegularizedLeastSquaresDeconvolutionImageFilter
+  RichardsonLucyDeconvolutionImageFilter
+  TikhonovMillerDeconvolutionImageFilter
+  TikhonovMillerRichardsonLucyDeconvolutionImageFilter
+  VanCittertDeconvolutionImageFilter
+  WienerDeconvolutionImageFilter
+)
+
+
 INCLUDE_DIRECTORIES( ${ParaViewITKPlugins_SOURCE_DIR}/InsightJournal/deconv )
 INCLUDE_DIRECTORIES( ${ParaViewITKPlugins_SOURCE_DIR}/InsightJournal/fftconv )
 
 SET( ParaViewITKPluginsDeconvolutionSrcs
   vtkDeconvolutionImageFilter.cxx
+  vtkIterativeDeconvolutionImageFilter.cxx
 )
 VTK_WRAP_ClientServer("DeconvolutionImageFilter"
   WrappedSrcs "${ParaViewITKPluginsDeconvolutionSrcs}")
@@ -31,12 +49,6 @@ SET( LINK_LIBRARIES
   ${FFTWD_THREADS_LIB}
   ParaViewITKPluginsCommon
   ParaViewITKPluginsDeconvolution
-)
-
-SET( DECONVOLUTION_PLUGINS
-  RegularizedLeastSquaresDeconvolutionImageFilter
-  TikhonovMillerDeconvolutionImageFilter
-  WienerDeconvolutionImageFilter
 )
 
 FOREACH( PLUGIN ${DECONVOLUTION_PLUGINS} )
