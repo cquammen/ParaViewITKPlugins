@@ -52,6 +52,16 @@
        </Documentation>
      </IntVectorProperty>
 
+     <DoubleVectorProperty
+        name="Regularization Weight"
+        command="SetGamma"
+        number_of_elements="1"
+        default_values="0.01" >
+       <Documentation>
+         Set the regularization weight. If set to 0, the solution is unregularized.
+       </Documentation>
+     </DoubleVectorProperty>
+
    <!-- End filter -->
    </SourceProxy>
  </ProxyGroup>

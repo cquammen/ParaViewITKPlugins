@@ -23,16 +23,16 @@
 #ifndef __vtkWienerDeconvolutionImageFilter_h
 #define __vtkWienerDeconvolutionImageFilter_h
 
-#include <vtkITKImageFilter.h>
+#include <vtkDeconvolutionImageFilter.h>
 
 #include <itkWienerDeconvolutionImageFilter.h>
 
-class VTK_EXPORT vtkWienerDeconvolutionImageFilter : public vtkITKImageFilter
+class VTK_EXPORT vtkWienerDeconvolutionImageFilter : public vtkDeconvolutionImageFilter
 {
 public:
 
   static vtkWienerDeconvolutionImageFilter* New();
-  vtkTypeMacro(vtkWienerDeconvolutionImageFilter, vtkITKImageFilter);
+  vtkTypeMacro(vtkWienerDeconvolutionImageFilter, vtkDeconvolutionImageFilter);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   //BTX
@@ -45,28 +45,21 @@ public:
     ITKDeconvolutionFilterType;
   //ETX
 
-  // Set the convolution kernel image
-  void SetKernelImage(vtkAlgorithmOutput* image);
-
-  // Set/get the image padding type
-  vtkSetMacro(PaddingMethod, int);
-  vtkGetMacro(PaddingMethod, int);
+  // Set/get regularizing parameter Gamma
+  vtkSetMacro(Gamma, double);
+  vtkGetMacro(Gamma, double);
 
 protected:
   vtkWienerDeconvolutionImageFilter();
   ~vtkWienerDeconvolutionImageFilter();
 
-  int PaddingMethod;
+  double Gamma;
 
   //BTX
   ITKDeconvolutionFilterType::Pointer ITKDeconvolutionFilter;
   //ETX
 
 protected:
-  virtual int RequestUpdateExtent (vtkInformation *, vtkInformationVector **, vtkInformationVector *);
-
-  virtual int FillInputPortInformation(int port, vtkInformation *info);
-
   int UpdateInternalFilters();
 
 private:
