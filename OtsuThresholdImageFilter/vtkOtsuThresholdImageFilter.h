@@ -50,7 +50,9 @@ protected:
   vtkOtsuThresholdImageFilter();
   ~vtkOtsuThresholdImageFilter();
 
+  //BTX
   ITKOtsuThresholdImageFilterType::Pointer OtsuFilter;
+  //ETX
 
 protected:
   int UpdateInternalFilters();
