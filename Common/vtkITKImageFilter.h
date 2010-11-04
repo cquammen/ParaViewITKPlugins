@@ -61,6 +61,8 @@ protected:
   void InitializeITKImporters();
   void InitializeVTKImporters();
 
+  //BTX
+
   // DESCRIPTION:
   // Set the first filter in the ITK pipeline that receives input from
   // the VTK image passed into this filter. Note that this method
@@ -86,6 +88,8 @@ protected:
   {
     this->ITKExporter->SetInput(filter->GetOutput());
   }
+
+  //ETX
 
   // DESCRIPTION:
   // Subclasses must call this method *after* specifying the number of
