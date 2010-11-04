@@ -1,0 +1,18 @@
+<ParaViewFilters>
+  <Category name="DeconvolutionFilters" menu_label="&amp;Deconvolution Filters">
+    <!-- adds a new category and then adds our filters to it -->
+    <Filter name="AdaptivelyAcceleratedRichardsonLucyDeconvolutionImageFilter" />
+    <Filter name="DampedRichardsonLucyDeconvolutionImageFilter" />
+    <Filter name="JanssonVanCittertDeconvolutionImageFilter" />
+    <Filter name="LandweberDeconvolutionImageFilter" />
+    <Filter name="MaximumAPosterioriLeastSquaresDeconvolutionImageFilter" />
+    <Filter name="MaximumEntropyRichardsonLucyDeconvolutionImageFilter" />
+    <Filter name="PoissonMaximumAPosterioriDeconvolutionImageFilter" />
+    <Filter name="RegularizedLeastSquaresDeconvolutionImageFilter" />
+    <Filter name="RichardsonLucyDeconvolutionImageFilter" />
+    <Filter name="TikhonovMillerDeconvolutionImageFilter" />
+    <Filter name="TikhonovMillerRichardsonLucyDeconvolutionImageFilter" />
+    <Filter name="VanCittertDeconvolutionImageFilter" />
+    <Filter name="WienerDeconvolutionImageFilter" />
+  </Category>
+</ParaViewFilters>
