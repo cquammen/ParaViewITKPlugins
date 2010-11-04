@@ -27,12 +27,12 @@
 
 #include <itkDampedRichardsonLucyDeconvolutionImageFilter.h>
 
-class VTK_EXPORT vtkDampedRichardsonLucyDeconvolutionImageFilter : public vtkDeconvolutionImageFilter
+class VTK_EXPORT vtkDampedRichardsonLucyDeconvolutionImageFilter : public vtkIterativeDeconvolutionImageFilter
 {
 public:
 
   static vtkDampedRichardsonLucyDeconvolutionImageFilter* New();
-  vtkTypeMacro(vtkDampedRichardsonLucyDeconvolutionImageFilter, vtkDeconvolutionImageFilter);
+  vtkTypeMacro(vtkDampedRichardsonLucyDeconvolutionImageFilter, vtkIterativeDeconvolutionImageFilter);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   //BTX

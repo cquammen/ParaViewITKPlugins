@@ -27,12 +27,12 @@
 
 #include <itkMaximumEntropyRichardsonLucyDeconvolutionImageFilter.h>
 
-class VTK_EXPORT vtkMaximumEntropyRichardsonLucyDeconvolutionImageFilter : public vtkDeconvolutionImageFilter
+class VTK_EXPORT vtkMaximumEntropyRichardsonLucyDeconvolutionImageFilter : public vtkIterativeDeconvolutionImageFilter
 {
 public:
 
   static vtkMaximumEntropyRichardsonLucyDeconvolutionImageFilter* New();
-  vtkTypeMacro(vtkMaximumEntropyRichardsonLucyDeconvolutionImageFilter, vtkDeconvolutionImageFilter);
+  vtkTypeMacro(vtkMaximumEntropyRichardsonLucyDeconvolutionImageFilter, vtkIterativeDeconvolutionImageFilter);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   //BTX

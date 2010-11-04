@@ -27,12 +27,12 @@
 
 #include <itkJanssonVanCittertDeconvolutionImageFilter.h>
 
-class VTK_EXPORT vtkJanssonVanCittertDeconvolutionImageFilter : public vtkDeconvolutionImageFilter
+class VTK_EXPORT vtkJanssonVanCittertDeconvolutionImageFilter : public vtkIterativeDeconvolutionImageFilter
 {
 public:
 
   static vtkJanssonVanCittertDeconvolutionImageFilter* New();
-  vtkTypeMacro(vtkJanssonVanCittertDeconvolutionImageFilter, vtkDeconvolutionImageFilter);
+  vtkTypeMacro(vtkJanssonVanCittertDeconvolutionImageFilter, vtkIterativeDeconvolutionImageFilter);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   //BTX

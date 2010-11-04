@@ -27,12 +27,12 @@
 
 #include <itkLandweberDeconvolutionImageFilter.h>
 
-class VTK_EXPORT vtkLandweberDeconvolutionImageFilter : public vtkDeconvolutionImageFilter
+class VTK_EXPORT vtkLandweberDeconvolutionImageFilter : public vtkIterativeDeconvolutionImageFilter
 {
 public:
 
   static vtkLandweberDeconvolutionImageFilter* New();
-  vtkTypeMacro(vtkLandweberDeconvolutionImageFilter, vtkDeconvolutionImageFilter);
+  vtkTypeMacro(vtkLandweberDeconvolutionImageFilter, vtkIterativeDeconvolutionImageFilter);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   //BTX

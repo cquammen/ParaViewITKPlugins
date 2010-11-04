@@ -27,12 +27,12 @@
 
 #include <itkPoissonMaximumAPosterioriDeconvolutionImageFilter.h>
 
-class VTK_EXPORT vtkPoissonMaximumAPosterioriDeconvolutionImageFilter : public vtkDeconvolutionImageFilter
+class VTK_EXPORT vtkPoissonMaximumAPosterioriDeconvolutionImageFilter : public vtkIterativeDeconvolutionImageFilter
 {
 public:
 
   static vtkPoissonMaximumAPosterioriDeconvolutionImageFilter* New();
-  vtkTypeMacro(vtkPoissonMaximumAPosterioriDeconvolutionImageFilter, vtkDeconvolutionImageFilter);
+  vtkTypeMacro(vtkPoissonMaximumAPosterioriDeconvolutionImageFilter, vtkIterativeDeconvolutionImageFilter);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   //BTX
