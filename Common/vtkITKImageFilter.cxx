@@ -198,6 +198,7 @@ int vtkITKImageFilter::RequestData(vtkInformation *request,
     }
   catch(itk::ExceptionObject& error)
     {
+	vtkErrorMacro(<< error.GetDescription());
     return 0;
     }
 
