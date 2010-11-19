@@ -19,4 +19,5 @@ TARGET_LINK_LIBRARIES(${PLUGIN}
   ITKCommon
   ITKBasicFilters
   ITKIO
+  ParaViewITKPluginsCommon
 )

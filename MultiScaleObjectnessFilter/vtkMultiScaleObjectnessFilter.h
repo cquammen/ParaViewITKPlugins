@@ -1,35 +1,28 @@
 #ifndef __vtkMultiScaleObjectnessFilter_h
 #define __vtkMultiScaleObjectnessFilter_h
 
-#include <vtkImageAlgorithm.h>
+#include <vtkITKImageFilter.h>
 
-#include <itkVTKImageImport.h>
-#include <itkVTKImageExport.h>
 #include <itkHessianToObjectnessMeasureImageFilter.h>
 #include <itkMultiScaleHessianBasedMeasureImageFilter.h>
 
-class vtkImageExport;
-class vtkImageImport;
-
-class VTK_EXPORT vtkMultiScaleObjectnessFilter : public vtkImageAlgorithm
+class VTK_EXPORT vtkMultiScaleObjectnessFilter : public vtkITKImageFilter
 {
 public:
 
+  static vtkMultiScaleObjectnessFilter* New();
+  vtkTypeMacro(vtkMultiScaleObjectnessFilter, vtkITKImageFilter);
+  void PrintSelf(ostream& os, vtkIndent indent);
+
   //BTX
-  typedef float
-    PixelType;
-  typedef itk::Image< PixelType, 3 >
-    ITKImageType;
-  typedef itk::VTKImageImport< ITKImageType >
-    ITKImageImportType;
-  typedef itk::VTKImageExport< ITKImageType >
-    ITKImageExportType;
-  typedef itk::NumericTraits< PixelType >::RealType 
-	RealPixelType;
-  typedef itk::SymmetricSecondRankTensor< RealPixelType, 3 >
-	HessianPixelType;
-  typedef itk::Image< HessianPixelType, 3 >
-	HessianImageType;
+  typedef Superclass::PixelType             PixelType;
+  typedef Superclass::ITKImageType          ITKImageType;
+  typedef Superclass::ITKInternalFilterType ITKInternalFilterType;
+  typedef Superclass::ITKImageImportType    ITKImageImportType;
+  typedef Superclass::ITKImageExportType    ITKImageExportType;
+  typedef itk::NumericTraits< PixelType >::RealType RealPixelType;
+  typedef itk::SymmetricSecondRankTensor< RealPixelType, 3 > HessianPixelType;
+  typedef itk::Image< HessianPixelType, 3 > HessianImageType;
   // Declare the type of enhancement filter
   typedef itk::HessianToObjectnessMeasureImageFilter< HessianImageType,ITKImageType > 
 	ObjectnessFilterType;
@@ -37,13 +30,6 @@ public:
   typedef itk::MultiScaleHessianBasedMeasureImageFilter< ITKImageType,HessianImageType, ITKImageType > 
 	MultiScaleEnhancementFilterType;
   //ETX
-
-  static vtkMultiScaleObjectnessFilter* New();
-  vtkTypeMacro(vtkMultiScaleObjectnessFilter, vtkImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
-
-  //void SetStandardDeviation(double sigma0, double sigma1, double sigma2);
-  //void SetStandardDeviation(double sigma[3]);
 
   vtkSetMacro(Alpha, double);
   vtkGetMacro(Alpha, double);
@@ -72,25 +58,13 @@ protected:
   double SigmaMin;
   int NoOfSigmaSteps;
 
-  vtkImageExport*                VTKExporter;
   //BTX
-  ITKImageImportType::Pointer    ITKImporter;
-  ITKImageExportType::Pointer    ITKExporter;
   ObjectnessFilterType::Pointer objectnessFilter;
   MultiScaleEnhancementFilterType::Pointer multiScaleEnhancementFilter;
   //ETX
-  vtkImageImport*                VTKImporter;
 
 protected:
-  void InitializeITKImporter();
-  void InitializeITKExporter();
-
-  int RequestData(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector);
-
-  //BTX
-  template <class T>
-  void RunITKPipeline(const T *input);
-  //ETX
+	int UpdateInternalFilters();
 
 private:
   vtkMultiScaleObjectnessFilter(const vtkMultiScaleObjectnessFilter&);  // Not implemented.
