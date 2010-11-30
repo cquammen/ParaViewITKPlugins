@@ -43,7 +43,9 @@ ADD_SUBDIRECTORY( OtsuThresholdImageFilter )
 ADD_SUBDIRECTORY( Hessian3DToVesselnessMeasureImageFilter)
 ADD_SUBDIRECTORY( BinaryThinningImageFilter )
 ADD_SUBDIRECTORY( MultiScaleObjectnessFilter )
-
+ADD_SUBDIRECTORY( BinaryThresholdImageFilter )
+ADD_SUBDIRECTORY( ConnectedThresholdImageFilter )
+ADD_SUBDIRECTORY( ConnectedComponentImageFilter )
 
 # These plugin does not currently compile on Windows
 IF( NOT WIN32 )
