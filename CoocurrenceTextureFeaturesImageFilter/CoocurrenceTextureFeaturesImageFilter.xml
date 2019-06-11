@@ -1,0 +1,65 @@
+<ServerManagerConfiguration>
+  <!-- This is the server manager configuration XML. It defines the interface to
+       our new filter. As a rule of thumb, try to locate the configuration for
+       a filter already in ParaView (in Servers/ServerManager/Resources/*.xml)
+       that matches your filter and then model your xml on it -->
+  <ProxyGroup name="filters">
+    <SourceProxy name="CoocurrenceTextureFeaturesImageFilter" class="vtkCoocurrenceTextureFeaturesImageFilter" label="ITK Coocurrence Texture Features Image Filter">
+      <Documentation
+         long_help="Apply a Coocurrence Texture Features filter to the image."
+         short_help=".">
+        Put some text describing the filter here.
+      </Documentation>
+      <InputProperty
+         name="Input"
+         command="SetInputConnection">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources"/>
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkImageData"/>
+        </DataTypeDomain>
+      </InputProperty>
+
+      <IntVectorProperty
+         name="Number Of Bins Per Axis"
+         label="Number Of Bins Per Axis"
+         command="SetNumberOfBinsPerAxis"
+         number_of_elements="1"
+         default_values="7" >
+      </IntVectorProperty>
+      
+      <DoubleVectorProperty
+         name="Histogram Minimum"
+         label="Histogram Minimum"
+         command="SetHistogramMinimum"
+         number_of_elements="1"
+         default_values="0.0" >
+      </DoubleVectorProperty>
+      
+      <DoubleVectorProperty
+         name="Histogram Maximum"
+         label="Histogram Maximum"
+         command="SetHistogramMaximum"
+         number_of_elements="1"
+         default_values="50.0" >
+      </DoubleVectorProperty>
+
+      <IntVectorProperty
+         name="Neighborhood Radius"
+         label="Neighborhood Radius"
+         command="SetNeighborhoodRadius"
+         number_of_elements="1"
+         default_values="3" >
+      </IntVectorProperty>
+      
+    <Hints>
+	    <ShowInMenu category="ITK Image Filters" />
+	  </Hints>
+
+
+      <!-- End filter -->
+    </SourceProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>

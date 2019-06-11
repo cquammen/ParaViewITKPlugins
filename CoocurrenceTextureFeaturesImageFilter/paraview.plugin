@@ -1,0 +1,9 @@
+NAME
+  CoocurrenceTextureFeaturesImageFilter
+DESCRIPTION
+  ITK Coocurrence Texture Features Image Filter
+REQUIRES_MODULES
+  VTK::CommonCore
+  VTK::CommonDataModel
+  VTK::CommonExecutionModel
+  VTK::CommonMisc

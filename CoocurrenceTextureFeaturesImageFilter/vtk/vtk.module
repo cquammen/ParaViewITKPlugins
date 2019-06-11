@@ -1,0 +1,9 @@
+NAME
+  ITK::vtkCoocurrenceTextureFeaturesImageFilter
+LIBRARY_NAME
+  vtkCoocurrenceTextureFeaturesImageFilter
+DEPENDS
+  VTK::CommonCore
+  VTK::CommonExecutionModel
+  VTK::FiltersGeneral
+  ITK::ParaViewITKPluginsCommon
