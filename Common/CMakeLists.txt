@@ -1,18 +1,36 @@
 # Create a supporting library for base classes
-SET( ParaViewITKPluginsCommonSrcs
-  vtkITKImageFilter.cxx
+FIND_PACKAGE(ITK REQUIRED)
+INCLUDE(${ITK_USE_FILE})
+
+SET( classes
+  vtkITKImageFilter
 )
-VTK_WRAP_ClientServer("ITKImageFilter"
-  ParaViewITKPluginsWrappedSrcs "${ParaViewITKPluginsCommonSrcs}")
-ADD_LIBRARY( ParaViewITKPluginsCommon
-  ${ParaViewITKPluginsCommonSrcs}
-  ${ParaViewITKPluginsWrappedSrcs}
+
+vtk_module_add_module(ITK::ParaViewITKPluginsCommon
+  CLASSES ${classes}
 )
-TARGET_LINK_LIBRARIES(ParaViewITKPluginsCommon
-  vtkClientServer
-  vtkPVServerManager
-  itksys
-  ITKCommon
-  ITKBasicFilters
-  ITKIO
+
+vtk_module_link(ITK::ParaViewITKPluginsCommon
+  PRIVATE
+    ${VTK_LIBRARIES}
+    itksys
+    ITKCommon
+    ITKBasicFilters
+    ITKIO
 )
+# VTK_WRAP_ClientServer("ITKImageFilter"
+#   ParaViewITKPluginsWrappedSrcs "${ParaViewITKPluginsCommonSrcs}")
+# ADD_LIBRARY( ParaViewITKPluginsCommon
+#   ${ParaViewITKPluginsCommonSrcs}
+#   ${ParaViewITKPluginsWrappedSrcs}
+# )
+# TARGET_LINK_LIBRARIES(ParaViewITKPluginsCommon
+#   PRIVATE
+#     ${VTK_LIBRARIES}
+#     # vtkClientServer
+#     # vtkPVServerManager
+#     itksys
+#     ITKCommon
+#     ITKBasicFilters
+#     ITKIO
+# )

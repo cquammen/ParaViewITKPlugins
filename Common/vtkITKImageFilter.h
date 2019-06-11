@@ -42,7 +42,7 @@ public:
 
   static vtkITKImageFilter* New();
   vtkTypeMacro(vtkITKImageFilter, vtkImageAlgorithm);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
 protected:
   vtkITKImageFilter();
@@ -108,7 +108,7 @@ protected:
   // This is where all internal filter parameters should be updated.
   virtual int UpdateInternalFilters() {return 1;};
 
-  int RequestData(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector);
+  int RequestData(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector) override;
 
 private:
   vtkITKImageFilter(const vtkITKImageFilter&);  // Not implemented.

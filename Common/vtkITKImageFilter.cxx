@@ -147,7 +147,7 @@ int vtkITKImageFilter::BeforeUpdateInternalFilters(vtkInformationVector** inputV
       return 0;
       }
 
-    this->VTKCasters[i]->SetInput(input);
+    this->VTKCasters[i]->SetInputData(input);
     this->VTKCasters[i]->Update();
     }
 
