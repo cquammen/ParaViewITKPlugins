@@ -71,8 +71,10 @@ vtkITKImageFilter::~vtkITKImageFilter()
 //----------------------------------------------------------------------------
 void vtkITKImageFilter::InitializeITKImporters()
 {
+  std::cout << "Initializing ITK Importers" << std::endl;
   // Allocate the caster and VTK exporter filters
   int numPorts = this->GetNumberOfInputPorts();
+  std::cout << "Number of ports: " << numPorts << std::endl;
   this->VTKCasters = new vtkImageCast*[numPorts];
   this->VTKExporters = new vtkImageExport*[numPorts];
   this->ITKImporters = new ITKImageImportType::Pointer[numPorts];
@@ -103,6 +105,7 @@ void vtkITKImageFilter::InitializeITKImporters()
     this->ITKImporters[i]->SetUpdateInformationCallback(this->VTKExporters[i]->GetUpdateInformationCallback());
     this->ITKImporters[i]->SetWholeExtentCallback(this->VTKExporters[i]->GetWholeExtentCallback());
     }
+  std::cout << "finished setting up Importers" << std::endl;
 }
 
 //----------------------------------------------------------------------------

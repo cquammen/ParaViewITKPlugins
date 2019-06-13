@@ -6,4 +6,5 @@ DEPENDS
   VTK::CommonCore
   VTK::CommonExecutionModel
   VTK::FiltersGeneral
+  VTK::IOImage
   VTK::ImagingCore

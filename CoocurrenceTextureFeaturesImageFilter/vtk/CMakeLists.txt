@@ -10,9 +10,6 @@ vtk_module_add_module(ITK::vtkCoocurrenceTextureFeaturesImageFilter
 )
 
 vtk_module_link(ITK::vtkCoocurrenceTextureFeaturesImageFilter
-  PRIVATE
-    itksys
-    ITKCommon
-    ITKBasicFilters
-    ITKIO
+  PUBLIC
+    ${ITK_LIBRARIES}
 )

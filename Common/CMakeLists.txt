@@ -6,17 +6,13 @@ SET( classes
   vtkITKImageFilter
 )
 
-vtk_module_add_module(ITK::ParaViewITKPluginsCommon
+VTK_MODULE_ADD_MODULE(ITK::ParaViewITKPluginsCommon
   CLASSES ${classes}
 )
 
-vtk_module_link(ITK::ParaViewITKPluginsCommon
+VTK_MODULE_LINK(ITK::ParaViewITKPluginsCommon
   PRIVATE
-    ${VTK_LIBRARIES}
-    itksys
-    ITKCommon
-    ITKBasicFilters
-    ITKIO
+    ${ITK_LIBRARIES}
 )
 # VTK_WRAP_ClientServer("ITKImageFilter"
 #   ParaViewITKPluginsWrappedSrcs "${ParaViewITKPluginsCommonSrcs}")

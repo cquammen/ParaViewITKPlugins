@@ -21,10 +21,10 @@ vtkCoocurrenceTextureFeaturesImageFilter::vtkCoocurrenceTextureFeaturesImageFilt
   // Set up the internal filter pipeline.
   this->TextureFeaturesFilter = TextureFeaturesFilterType::New();
   // this->RelabelFilter = RelabelType::New();
-  // this->caster = CastingFilterType::New();
+  this->caster = CastingFilterType::New();
 
   // Set the first and last filters in the internal ITK pipeline.
-  this->SetITKPipelineFirstFilter<TextureFeaturesFilterType>(this->TextureFeaturesFilter);
+  this->SetITKPipelineFirstFilter<CastingFilterType>(this->caster);
   this->SetITKPipelineLastFilter<TextureFeaturesFilterType>(this->TextureFeaturesFilter);
 }
 
@@ -36,9 +36,10 @@ vtkCoocurrenceTextureFeaturesImageFilter::~vtkCoocurrenceTextureFeaturesImageFil
 //----------------------------------------------------------------------------
 int vtkCoocurrenceTextureFeaturesImageFilter::UpdateInternalFilters()
 {
-  this->TextureFeaturesFilter->SetNumberOfBinsPerAxis(this->numberOfBinsPerAxis); 
-  this->TextureFeaturesFilter->SetHistogramMinimum(this->histMinimum); 
-  this->TextureFeaturesFilter->SetHistogramMaximum(this->histMaximum); 
+  this->TextureFeaturesFilter->SetInput(caster->GetOutput());
+  this->TextureFeaturesFilter->SetNumberOfBinsPerAxis(this->numberOfBinsPerAxis);
+  this->TextureFeaturesFilter->SetHistogramMinimum(this->histMinimum);
+  this->TextureFeaturesFilter->SetHistogramMaximum(this->histMaximum);
   this->Neighborhood.SetRadius(neighborhoodRadius);
   this->TextureFeaturesFilter->SetNeighborhoodRadius(Neighborhood.GetRadius());
   this->TextureFeaturesFilter->Update();

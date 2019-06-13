@@ -15,16 +15,19 @@ public:
 
   static vtkCoocurrenceTextureFeaturesImageFilter* New();
   vtkTypeMacro(vtkCoocurrenceTextureFeaturesImageFilter, vtkITKImageFilter);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //BTX
-  // typedef Superclass::PixelType                PixelType;
+  typedef Superclass::FloatPixelType                PixelType;
+  typedef Superclass::ITKFloatImageType          ITKFloatImageType;
+  typedef Superclass::ITKFloatImageType          InputImageType;
   // typedef Superclass::ITKVectorPixelType       VectorPixelType;
-  typedef Superclass::ITKIntImageType             InputImageType;
+  typedef Superclass::ITKIntImageType             ITKIntImageType;
   typedef Superclass::ITKFloatVectorImageType       OutputImageType;
   // typedef Superclass::ITKInternalFilterType ITKInternalFilterType;
   // typedef Superclass::ITKImageImportType    ITKImageImportType;
   // typedef Superclass::ITKImageExportType    ITKImageExportType;
+  typedef itk::CastImageFilter< ITKFloatImageType, ITKIntImageType > CastingFilterType;
 
   // typedef itk::Image< float , 3 >  InputImageType;
   // typedef itk::Image< itk::Vector< float, 10 > , 3 >  OutputImageType;
@@ -36,7 +39,7 @@ public:
 
   // typedef itk::CastImageFilter< InternalImageType, ITKImageType > CastingFilterType;
   // typedef itk::BinaryThresholdImageFilter< ITKImageType, ITKImageType > ThresholdFilterType;
-  typedef itk::Statistics::CoocurrenceTextureFeaturesImageFilter< InputImageType, OutputImageType > 
+  typedef itk::Statistics::CoocurrenceTextureFeaturesImageFilter< ITKIntImageType, OutputImageType >
     TextureFeaturesFilterType;
   // typedef itk::RelabelComponentImageFilter< InternalImageType, ITKImageType > RelabelType;
   //ETX
@@ -57,7 +60,7 @@ public:
   double GetHistogramMaximum() { return histMaximum; }
   void SetNeighborhoodRadius(int val) { neighborhoodRadius = val; this->Modified(); }
   int GetNeighborhoodRadius() { return neighborhoodRadius; }
-  
+
   vtkSetMacro(numberOfBinsPerAxis, int);
   vtkGetMacro(numberOfBinsPerAxis, int);
   vtkSetMacro(histMinimum, double);
@@ -66,10 +69,10 @@ public:
   vtkGetMacro(histMaximum, double);
   vtkSetMacro(neighborhoodRadius, int);
   vtkGetMacro(neighborhoodRadius, int);
-  
-  void SetInputConnection(int port, vtkAlgorithmOutput* input)
+
+  void SetInputConnection(int port, vtkAlgorithmOutput* input) override
     {vtkImageAlgorithm::SetInputConnection(port, input);}
-  void SetInputConnection(vtkAlgorithmOutput* input)
+  void SetInputConnection(vtkAlgorithmOutput* input) override
     {vtkImageAlgorithm::SetInputConnection(input);}
 
 
@@ -85,10 +88,11 @@ protected:
   //BTX
   NeighborhoodType Neighborhood;  // MJS FIXME Why can't this be a pointer?
   TextureFeaturesFilterType::Pointer TextureFeaturesFilter;
+  CastingFilterType::Pointer caster;
   //ETX
 
 protected:
-  int UpdateInternalFilters();
+  int UpdateInternalFilters() override;
 
 private:
   vtkCoocurrenceTextureFeaturesImageFilter(const vtkCoocurrenceTextureFeaturesImageFilter&);  // Not implemented.

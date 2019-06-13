@@ -21,9 +21,10 @@
 
 #include <vtkImageCast.h>
 
-#include <itkImageToImageFilter.h>
+// #include "vtkImagingGeneralModule.h" // For export macro
 #include <itkVTKImageImport.h>
 #include <itkVTKImageExport.h>
+#include <itkImageToImageFilter.h>
 
 class vtkImageExport;
 class vtkImageImport;
@@ -33,11 +34,17 @@ class VTK_EXPORT vtkITKImageFilter : public vtkImageAlgorithm
 public:
 
   //BTX
-  typedef float                                                 PixelType;
-  typedef itk::Image< PixelType, 3 >                            ITKImageType;
-  typedef itk::ImageToImageFilter< ITKImageType, ITKImageType > ITKInternalFilterType;
-  typedef itk::VTKImageImport< ITKImageType >                   ITKImageImportType;
-  typedef itk::VTKImageExport< ITKImageType >                   ITKImageExportType;
+  typedef float                                                 FloatPixelType;
+  typedef itk::Image< FloatPixelType, 3 >                       ITKFloatImageType;
+  typedef int                                                   IntPixelType;
+  typedef itk::Image< IntPixelType, 3 >                         ITKIntImageType;
+  typedef itk::Vector< FloatPixelType, 10 >                     ITKFloatVectorPixelType;  // 20190516 MJS added to allow output of vector images
+  typedef itk::Vector< IntPixelType, 10 >                     ITKIntVectorPixelType;  // 20190516 MJS added to allow output of vector images
+  typedef itk::Image< ITKFloatVectorPixelType, 3 >                   ITKFloatVectorImageType;
+  typedef itk::Image< ITKIntVectorPixelType, 3 >                   ITKIntVectorImageType;
+  typedef itk::ImageToImageFilter< ITKFloatImageType, ITKFloatVectorImageType > ITKInternalFilterType;
+  typedef itk::VTKImageImport< ITKFloatImageType >                   ITKImageImportType;
+  typedef itk::VTKImageExport< ITKFloatVectorImageType >             ITKImageExportType;
   //ETX
 
   static vtkITKImageFilter* New();
@@ -109,6 +116,10 @@ protected:
   virtual int UpdateInternalFilters() {return 1;};
 
   int RequestData(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector) override;
+  void SetInputConnection(int port, vtkAlgorithmOutput* input) override
+    {vtkImageAlgorithm::SetInputConnection(port, input);}
+  void SetInputConnection(vtkAlgorithmOutput* input) override
+    {vtkImageAlgorithm::SetInputConnection(input);}
 
 private:
   vtkITKImageFilter(const vtkITKImageFilter&);  // Not implemented.
