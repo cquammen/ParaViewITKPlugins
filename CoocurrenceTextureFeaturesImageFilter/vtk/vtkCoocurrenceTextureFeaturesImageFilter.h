@@ -18,48 +18,59 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //BTX
-  typedef Superclass::FloatPixelType                PixelType;
+  typedef Superclass::PixelType                  PixelType;
   typedef Superclass::ITKFloatImageType          ITKFloatImageType;
   typedef Superclass::ITKFloatImageType          InputImageType;
-  // typedef Superclass::ITKVectorPixelType       VectorPixelType;
-  typedef Superclass::ITKIntImageType             ITKIntImageType;
-  typedef Superclass::ITKFloatVectorImageType       OutputImageType;
-  // typedef Superclass::ITKInternalFilterType ITKInternalFilterType;
-  // typedef Superclass::ITKImageImportType    ITKImageImportType;
-  // typedef Superclass::ITKImageExportType    ITKImageExportType;
-  typedef itk::CastImageFilter< ITKFloatImageType, ITKIntImageType > CastingFilterType;
+  typedef Superclass::ITKIntImageType            ITKIntImageType;
+  typedef Superclass::ITKFloatVectorImageType    OutputImageType;
+  typedef itk::CastImageFilter<ITKFloatImageType, ITKIntImageType>
+    CastingFilterType;
 
-  // typedef itk::Image< float , 3 >  InputImageType;
-  // typedef itk::Image< itk::Vector< float, 10 > , 3 >  OutputImageType;
-
-  typedef itk::Neighborhood<typename InputImageType::PixelType, InputImageType::ImageDimension >
+  typedef itk::Neighborhood<typename InputImageType::PixelType,
+                            InputImageType::ImageDimension>
     NeighborhoodType;
-    // using NeighborhoodType = itk::Neighborhood<typename InputImageType::PixelType,
-    //   InputImageType::ImageDimension>;
 
-  // typedef itk::CastImageFilter< InternalImageType, ITKImageType > CastingFilterType;
-  // typedef itk::BinaryThresholdImageFilter< ITKImageType, ITKImageType > ThresholdFilterType;
-  typedef itk::Statistics::CoocurrenceTextureFeaturesImageFilter< ITKIntImageType, OutputImageType >
-    TextureFeaturesFilterType;
-  // typedef itk::RelabelComponentImageFilter< InternalImageType, ITKImageType > RelabelType;
+  typedef itk::Statistics::
+    CoocurrenceTextureFeaturesImageFilter<ITKIntImageType, OutputImageType>
+      TextureFeaturesFilterType;
   //ETX
 
-  // void SetLowerThreshold(double val) { LowerThreshold = val; this->Modified(); }
-  // double GetLowerThreshold() { return LowerThreshold; }
-  // void SetUpperThreshold(double val) { UpperThreshold = val; this->Modified(); }
-  // double GetUpperThreshold() { return UpperThreshold; }
-  // void SetFullyConnected(int ival) { FullyConnected = ival; this->Modified();}
-  // int GetFullyConnected() { return FullyConnected; }
-  // void SetMinimumObjectSize(int ival) { MinimumObjectSize = ival; this->Modified();}
-  // int GetMinimumObjectSize() { return MinimumObjectSize; }
-  void SetNumberOfBinsPerAxis(int val) { numberOfBinsPerAxis = val; this->Modified(); }
-  int GetNumberOfBinsPerAxis() { return numberOfBinsPerAxis; }
-  void SetHistogramMinimum(double val) { histMinimum = val; this->Modified(); }
-  double GetHistogramMinimum() { return histMinimum; }
-  void SetHistogramMaximum(double val) { histMaximum = val; this->Modified(); }
-  double GetHistogramMaximum() { return histMaximum; }
-  void SetNeighborhoodRadius(int val) { neighborhoodRadius = val; this->Modified(); }
-  int GetNeighborhoodRadius() { return neighborhoodRadius; }
+  void SetNumberOfBinsPerAxis(int val)
+  {
+    numberOfBinsPerAxis = val;
+    this->Modified();
+  }
+  int GetNumberOfBinsPerAxis()
+  {
+    return numberOfBinsPerAxis;
+  }
+  void SetHistogramMinimum(double val)
+  {
+    histMinimum = val;
+    this->Modified();
+  }
+  double GetHistogramMinimum()
+  {
+    return histMinimum;
+  }
+  void SetHistogramMaximum(double val)
+  {
+    histMaximum = val;
+    this->Modified();
+  }
+  double GetHistogramMaximum()
+  {
+    return histMaximum;
+  }
+  void SetNeighborhoodRadius(int val)
+  {
+    neighborhoodRadius = val;
+    this->Modified();
+  }
+  int GetNeighborhoodRadius()
+  {
+    return neighborhoodRadius;
+  }
 
   vtkSetMacro(numberOfBinsPerAxis, int);
   vtkGetMacro(numberOfBinsPerAxis, int);
@@ -95,8 +106,10 @@ protected:
   int UpdateInternalFilters() override;
 
 private:
-  vtkCoocurrenceTextureFeaturesImageFilter(const vtkCoocurrenceTextureFeaturesImageFilter&);  // Not implemented.
-  void operator=(const vtkCoocurrenceTextureFeaturesImageFilter&);  // Not implemented.
+  vtkCoocurrenceTextureFeaturesImageFilter(
+    const vtkCoocurrenceTextureFeaturesImageFilter&); // Not implemented.
+  void operator=(
+    const vtkCoocurrenceTextureFeaturesImageFilter&); // Not implemented.
 };
 
 #endif

@@ -25,26 +25,26 @@
 #include <itkVTKImageImport.h>
 #include <itkVTKImageExport.h>
 #include <itkImageToImageFilter.h>
+#include <vtkImageImport.h>
 
 class vtkImageExport;
-class vtkImageImport;
 
 class VTK_EXPORT vtkITKImageFilter : public vtkImageAlgorithm
 {
 public:
 
   //BTX
-  typedef float                                                 FloatPixelType;
-  typedef itk::Image< FloatPixelType, 3 >                       ITKFloatImageType;
+  typedef float                                                 PixelType;
+  typedef itk::Image< PixelType, 3 >                            ITKImageType;
+  typedef itk::ImageToImageFilter< ITKImageType, ITKImageType > ITKInternalFilterType;
+  typedef itk::VTKImageImport< ITKImageType >                   ITKImageImportType;
+  typedef itk::VTKImageExport< ITKImageType >                   ITKImageExportType;
+  typedef itk::Image< PixelType, 3 >                            ITKFloatImageType;
   typedef int                                                   IntPixelType;
   typedef itk::Image< IntPixelType, 3 >                         ITKIntImageType;
-  typedef itk::Vector< FloatPixelType, 10 >                     ITKFloatVectorPixelType;  // 20190516 MJS added to allow output of vector images
-  typedef itk::Vector< IntPixelType, 10 >                     ITKIntVectorPixelType;  // 20190516 MJS added to allow output of vector images
-  typedef itk::Image< ITKFloatVectorPixelType, 3 >                   ITKFloatVectorImageType;
-  typedef itk::Image< ITKIntVectorPixelType, 3 >                   ITKIntVectorImageType;
-  typedef itk::ImageToImageFilter< ITKFloatImageType, ITKFloatVectorImageType > ITKInternalFilterType;
-  typedef itk::VTKImageImport< ITKFloatImageType >                   ITKImageImportType;
-  typedef itk::VTKImageExport< ITKFloatVectorImageType >             ITKImageExportType;
+  typedef itk::Vector< PixelType, 10 >                          ITKFloatVectorPixelType;
+  typedef itk::Image< ITKFloatVectorPixelType, 3 >              ITKFloatVectorImageType;
+  typedef itk::VTKImageExport< ITKFloatVectorImageType >        ITKVectorImageExportType;
   //ETX
 
   static vtkITKImageFilter* New();
@@ -61,6 +61,7 @@ protected:
   vtkImageExport**             VTKExporters;
   ITKImageImportType::Pointer* ITKImporters;
   ITKImageExportType::Pointer  ITKExporter;
+  ITKVectorImageExportType::Pointer  ITKVectorImageExporter;
   vtkImageImport*              VTKImporter;
   //ETX
 
@@ -96,6 +97,44 @@ protected:
     this->ITKExporter->SetInput(filter->GetOutput());
   }
 
+  template< class T >
+  void SetITKPipelineVectorOutputLastFilter(T* filter)
+  {
+    this->ITKVectorImageExporter->SetInput(filter->GetOutput());
+  }
+
+  template<class T>
+  void InitializeSpecializedVTKImporters(T* exporter)
+  {
+    // This call takes the place of the usual SetInput() method.
+    this->VTKImporter->SetCallbackUserData(exporter->GetCallbackUserData());
+
+    // Set the rest of the callbacks
+    this->VTKImporter->SetUpdateInformationCallback(
+      exporter->GetUpdateInformationCallback());
+    this->VTKImporter->SetPipelineModifiedCallback(
+      exporter->GetPipelineModifiedCallback());
+    this->VTKImporter->SetWholeExtentCallback(
+      exporter->GetWholeExtentCallback());
+    this->VTKImporter->SetSpacingCallback(exporter->GetSpacingCallback());
+    this->VTKImporter->SetOriginCallback(exporter->GetOriginCallback());
+    this->VTKImporter->SetScalarTypeCallback(exporter->GetScalarTypeCallback());
+    this->VTKImporter->SetNumberOfComponentsCallback(
+      exporter->GetNumberOfComponentsCallback());
+    this->VTKImporter->SetPropagateUpdateExtentCallback(
+      exporter->GetPropagateUpdateExtentCallback());
+    this->VTKImporter->SetUpdateDataCallback(exporter->GetUpdateDataCallback());
+    this->VTKImporter->SetDataExtentCallback(exporter->GetDataExtentCallback());
+    this->VTKImporter->SetBufferPointerCallback(
+      exporter->GetBufferPointerCallback());
+  }
+
+  // DESCRIPTION:
+  // Set / Get whether the output is a vector image
+  vtkSetMacro(VectorOutput, bool);
+  vtkGetMacro(VectorOutput, bool);
+  vtkBooleanMacro(VectorOutput, bool);
+
   //ETX
 
   // DESCRIPTION:
@@ -115,11 +154,11 @@ protected:
   // This is where all internal filter parameters should be updated.
   virtual int UpdateInternalFilters() {return 1;};
 
-  int RequestData(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector) override;
-  void SetInputConnection(int port, vtkAlgorithmOutput* input) override
-    {vtkImageAlgorithm::SetInputConnection(port, input);}
-  void SetInputConnection(vtkAlgorithmOutput* input) override
-    {vtkImageAlgorithm::SetInputConnection(input);}
+  int RequestData(vtkInformation* request,
+                  vtkInformationVector** inputVector,
+                  vtkInformationVector* outputVector) override;
+
+  bool VectorOutput = false;
 
 private:
   vtkITKImageFilter(const vtkITKImageFilter&);  // Not implemented.

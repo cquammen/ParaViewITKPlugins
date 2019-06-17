@@ -1,35 +1,36 @@
 
 #include "vtkCoocurrenceTextureFeaturesImageFilter.h"
 
-#include "vtkObjectFactory.h"
+#include "vtkImageData.h"
 #include "vtkImageExport.h"
 #include "vtkImageImport.h"
-#include "vtkImageData.h"
-#include "vtkInformationVector.h"
 #include "vtkInformation.h"
+#include "vtkInformationVector.h"
+#include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkCoocurrenceTextureFeaturesImageFilter);
 
 //----------------------------------------------------------------------------
-vtkCoocurrenceTextureFeaturesImageFilter::vtkCoocurrenceTextureFeaturesImageFilter()
+vtkCoocurrenceTextureFeaturesImageFilter::
+  vtkCoocurrenceTextureFeaturesImageFilter()
 {
-  // Set up number of input and output ports
-
+  this->SetVectorOutput(true);
   // Initialize the ITK-VTK glue.
   this->Init();
 
   // Set up the internal filter pipeline.
   this->TextureFeaturesFilter = TextureFeaturesFilterType::New();
-  // this->RelabelFilter = RelabelType::New();
   this->caster = CastingFilterType::New();
 
   // Set the first and last filters in the internal ITK pipeline.
   this->SetITKPipelineFirstFilter<CastingFilterType>(this->caster);
-  this->SetITKPipelineLastFilter<TextureFeaturesFilterType>(this->TextureFeaturesFilter);
+  this->SetITKPipelineVectorOutputLastFilter<TextureFeaturesFilterType>(
+    this->TextureFeaturesFilter);
 }
 
 //----------------------------------------------------------------------------
-vtkCoocurrenceTextureFeaturesImageFilter::~vtkCoocurrenceTextureFeaturesImageFilter()
+vtkCoocurrenceTextureFeaturesImageFilter::
+  ~vtkCoocurrenceTextureFeaturesImageFilter()
 {
 }
 
@@ -37,7 +38,8 @@ vtkCoocurrenceTextureFeaturesImageFilter::~vtkCoocurrenceTextureFeaturesImageFil
 int vtkCoocurrenceTextureFeaturesImageFilter::UpdateInternalFilters()
 {
   this->TextureFeaturesFilter->SetInput(caster->GetOutput());
-  this->TextureFeaturesFilter->SetNumberOfBinsPerAxis(this->numberOfBinsPerAxis);
+  this->TextureFeaturesFilter->SetNumberOfBinsPerAxis(
+    this->numberOfBinsPerAxis);
   this->TextureFeaturesFilter->SetHistogramMinimum(this->histMinimum);
   this->TextureFeaturesFilter->SetHistogramMaximum(this->histMaximum);
   this->Neighborhood.SetRadius(neighborhoodRadius);
@@ -48,7 +50,8 @@ int vtkCoocurrenceTextureFeaturesImageFilter::UpdateInternalFilters()
 }
 
 //----------------------------------------------------------------------------
-void vtkCoocurrenceTextureFeaturesImageFilter::PrintSelf(ostream& os, vtkIndent indent)
+void vtkCoocurrenceTextureFeaturesImageFilter::PrintSelf(ostream& os,
+                                                         vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }
