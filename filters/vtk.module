@@ -1,7 +1,7 @@
 NAME
-  ITK::vtkCoocurrenceTextureFeaturesImageFilter
+  ITK::vtkITKImageFilters
 LIBRARY_NAME
-  vtkCoocurrenceTextureFeaturesImageFilter
+  vtkITKImageFilters
 DEPENDS
   VTK::CommonCore
   VTK::CommonExecutionModel

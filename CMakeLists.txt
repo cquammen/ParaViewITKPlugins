@@ -24,27 +24,27 @@ FIND_PACKAGE(ParaView REQUIRED)
 
 # Plugins
 # Find paraview.plugin files in subdirectories
-paraview_plugin_find_plugins(
+PARAVIEW_PLUGIN_FIND_PLUGINS(
   ${PROJECT_NAME}Files
   ${CMAKE_SOURCE_DIR}
 )
 
 # Add the found plugins to the build system
-paraview_plugin_scan(
+PARAVIEW_PLUGIN_SCAN(
   PLUGIN_FILES ${${PROJECT_NAME}Files}
   PROVIDES_PLUGINS plugins
   REQUIRES_MODULES required_modules
   ENABLE_BY_DEFAULT ON
 )
 
-foreach(module IN LISTS required_modules)
-  if(NOT TARGET "${module}")
-    message("Missing required module: ${module}")
-    return()
-  endif()
-endforeach()
+FOREACH(module IN LISTS required_modules)
+  IF(NOT TARGET "${module}")
+    MESSAGE("Missing required module: ${module}")
+    RETURN()
+  ENDIF()
+ENDFOREACH()
 
-paraview_plugin_build(
+PARAVIEW_PLUGIN_BUILD(
   RUNTIME_DESTINATION "${CMAKE_INSTALL_BINDIR}"
   LIBRARY_DESTINATION "${CMAKE_INSTALL_LIBDIR}"
   LIBRARY_SUBDIRECTORY "${PARAVIEW_PLUGIN_SUBDIR}"

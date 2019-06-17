@@ -1,7 +1,7 @@
 NAME
-  CoocurrenceTextureFeaturesImageFilter
+  ITKImageFilters
 DESCRIPTION
-  ITK Coocurrence Texture Features Image Filter
+  ITK Image Filters
 REQUIRES_MODULES
   VTK::CommonCore
   VTK::CommonDataModel
