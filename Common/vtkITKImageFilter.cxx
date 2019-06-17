@@ -34,6 +34,8 @@ vtkITKImageFilter::vtkITKImageFilter()
   this->ITKExporter = ITKImageExportType::New();
   this->ITKVectorImageExporter = ITKVectorImageExportType::New();
   this->VTKImporter = vtkImageImport::New();
+  this->SetNumberOfInputPorts(1);
+  this->SetNumberOfOutputPorts(1);
 }
 
 //----------------------------------------------------------------------------

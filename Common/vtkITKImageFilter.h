@@ -51,6 +51,10 @@ public:
   vtkTypeMacro(vtkITKImageFilter, vtkImageAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
+  void SetInputConnection(int port, vtkAlgorithmOutput* input) override
+    {vtkImageAlgorithm::SetInputConnection(port, input);}
+  void SetInputConnection(vtkAlgorithmOutput* input) override
+    {vtkImageAlgorithm::SetInputConnection(input);}
 protected:
   vtkITKImageFilter();
   virtual ~vtkITKImageFilter();

@@ -33,6 +33,11 @@ public:
   vtkSetMacro(upperThreshold, int);
   vtkGetMacro(upperThreshold, int);
 
+  void SetInputConnection(int port, vtkAlgorithmOutput* input) override
+    {vtkImageAlgorithm::SetInputConnection(port, input);}
+  void SetInputConnection(vtkAlgorithmOutput* input) override
+    {vtkImageAlgorithm::SetInputConnection(input);}
+
 protected:
   vtkBinaryThresholdImageFilter();
   ~vtkBinaryThresholdImageFilter();

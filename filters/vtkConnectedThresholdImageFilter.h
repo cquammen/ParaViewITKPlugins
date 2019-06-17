@@ -13,7 +13,7 @@ public:
 
   static vtkConnectedThresholdImageFilter* New();
   vtkTypeMacro(vtkConnectedThresholdImageFilter, vtkITKImageFilter);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   //BTX
   typedef Superclass::PixelType             PixelType;
@@ -36,6 +36,11 @@ public:
   vtkSetVector3Macro(Seed, int);
   vtkGetVector3Macro(Seed, int);
 
+  void SetInputConnection(int port, vtkAlgorithmOutput* input) override
+    {vtkImageAlgorithm::SetInputConnection(port, input);}
+  void SetInputConnection(vtkAlgorithmOutput* input) override
+    {vtkImageAlgorithm::SetInputConnection(input);}
+
 protected:
   vtkConnectedThresholdImageFilter();
   ~vtkConnectedThresholdImageFilter();
@@ -52,7 +57,7 @@ protected:
   //ETX
 
 protected:
-  int UpdateInternalFilters();
+  int UpdateInternalFilters() override;
 
 private:
   vtkConnectedThresholdImageFilter(const vtkConnectedThresholdImageFilter&);  // Not implemented.
