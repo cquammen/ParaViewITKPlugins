@@ -2,8 +2,11 @@ find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
 set(classes
-  vtkCoocurrenceTextureFeaturesImageFilter
   vtkBinaryThinning3DFilter
+  vtkBinaryThresholdImageFilter
+  vtkConnectedComponentImageFilter
+  vtkConnectedThresholdImageFilter
+  vtkCoocurrenceTextureFeaturesImageFilter
 )
 
 vtk_module_add_module(ITK::vtkITKImageFilters

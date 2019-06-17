@@ -84,6 +84,126 @@
    <!-- End BinaryThresholdImageFilter -->
    </SourceProxy>
 
+    <SourceProxy name="ConnectedComponentImageFilter" class="vtkConnectedComponentImageFilter" label="Connected Component Image Filter">
+      <Documentation
+         long_help="Apply a Connected Component filter to the image."
+         short_help=".">
+        Put some text describing the filter here.
+      </Documentation>
+      <InputProperty
+         name="Input"
+         command="SetInputConnection">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources"/>
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkImageData"/>
+        </DataTypeDomain>
+      </InputProperty>
+
+      <DoubleVectorProperty
+         name="Lower Threshold"
+         label="Lower Threshold"
+         command="SetLowerThreshold"
+         number_of_elements="1"
+         default_values="1.0" >
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="Upper Threshold"
+         label="Upper Threshold"
+         command="SetUpperThreshold"
+         number_of_elements="1"
+         default_values="1.0" >
+      </DoubleVectorProperty>
+
+      <IntVectorProperty
+         name="Fully Connected"
+         label="Fully Connected"
+         command="SetFullyConnected"
+         number_of_elements="1"
+         default_values="0" >
+      </IntVectorProperty>
+
+      <IntVectorProperty
+         name="Minimum Object Size"
+         label="Minimum Object Size"
+         command="SetMinimumObjectSize"
+         number_of_elements="1"
+         default_values="5" >
+      </IntVectorProperty>
+     <Hints>
+       <ShowInMenu category="ITK Image Filters" />
+     </Hints>
+
+      <!-- End filter -->
+    </SourceProxy>
+
+    <SourceProxy name="ConnectedThresholdImageFilter" class="vtkConnectedThresholdImageFilter" label="Connected Threshold Image Filter">
+      <Documentation
+         long_help="Apply a Connected Threshold filter to the image."
+         short_help=".">
+        Put some text describing the filter here.
+      </Documentation>
+      <InputProperty
+         name="Input"
+         command="SetInputConnection">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources"/>
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkImageData"/>
+        </DataTypeDomain>
+      </InputProperty>
+
+      <IntVectorProperty
+         name="Number of Iterations"
+         label="Number of Iterations"
+         command="SetNumberofIterations"
+         number_of_elements="1"
+         default_values="5" >
+      </IntVectorProperty>
+
+      <DoubleVectorProperty
+         name="Time Step"
+         label="Time Step"
+         command="SetTimeStep"
+         number_of_elements="1"
+         default_values="0.125" >
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="Lower Threshold"
+         label="Lower Threshold"
+         command="SetLowerThreshold"
+         number_of_elements="1"
+         default_values="1.0" >
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="Upper Threshold"
+         label="Upper Threshold"
+         command="SetUpperThreshold"
+         number_of_elements="1"
+         default_values="1.0" >
+      </DoubleVectorProperty>
+
+      <IntVectorProperty
+         name="Seed"
+         label="Seed"
+         command="SetSeed"
+         number_of_elements="3"
+         default_values="1 1 1" >
+      </IntVectorProperty>
+     <Hints>
+       <ShowInMenu category="ITK Image Filters" />
+     </Hints>
+
+      <!-- End filter -->
+    </SourceProxy>
+
     <SourceProxy name="CoocurrenceTextureFeaturesImageFilter" class="vtkCoocurrenceTextureFeaturesImageFilter" label="Coocurrence Texture Features Image Filter">
       <Documentation
          long_help="Apply a Coocurrence Texture Features filter to the image."
