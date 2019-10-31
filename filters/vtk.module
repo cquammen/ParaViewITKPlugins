@@ -1,0 +1,9 @@
+NAME
+  ITK::vtkITKImageFilters
+LIBRARY_NAME
+  vtkITKImageFilters
+DEPENDS
+  VTK::CommonCore
+  VTK::CommonExecutionModel
+  VTK::FiltersGeneral
+  ITK::ParaViewITKPluginsCommon

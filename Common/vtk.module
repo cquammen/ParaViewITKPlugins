@@ -1,0 +1,10 @@
+NAME
+  ITK::ParaViewITKPluginsCommon
+LIBRARY_NAME
+  ParaViewITKPluginsCommon
+DEPENDS
+  VTK::CommonCore
+  VTK::CommonExecutionModel
+  VTK::FiltersGeneral
+  VTK::IOImage
+  VTK::ImagingCore

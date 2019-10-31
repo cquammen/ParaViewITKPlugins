@@ -1,0 +1,9 @@
+NAME
+  ITKImageFilters
+DESCRIPTION
+  ITK Image Filters
+REQUIRES_MODULES
+  VTK::CommonCore
+  VTK::CommonDataModel
+  VTK::CommonExecutionModel
+  VTK::CommonMisc

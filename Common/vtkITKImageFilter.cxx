@@ -17,12 +17,11 @@
 
 #include "vtkITKImageFilter.h"
 
-#include "vtkObjectFactory.h"
-#include "vtkImageExport.h"
-#include "vtkImageImport.h"
 #include "vtkImageData.h"
-#include "vtkInformationVector.h"
+#include "vtkImageExport.h"
 #include "vtkInformation.h"
+#include "vtkInformationVector.h"
+#include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkITKImageFilter);
 
@@ -33,7 +32,10 @@ vtkITKImageFilter::vtkITKImageFilter()
   this->VTKExporters = NULL;
   this->ITKImporters = NULL;
   this->ITKExporter = ITKImageExportType::New();
+  this->ITKVectorImageExporter = ITKVectorImageExportType::New();
   this->VTKImporter = vtkImageImport::New();
+  this->SetNumberOfInputPorts(1);
+  this->SetNumberOfOutputPorts(1);
 }
 
 //----------------------------------------------------------------------------
@@ -41,31 +43,31 @@ vtkITKImageFilter::~vtkITKImageFilter()
 {
   int numPorts = this->GetNumberOfInputPorts();
   if (this->VTKCasters)
-    {
+  {
     for (int i = 0; i < numPorts; i++)
+    {
+      if (this->VTKCasters[i])
       {
-      if ( this->VTKCasters[i] )
-        {
         this->VTKCasters[i]->Delete();
-        }
       }
     }
+  }
 
   if (this->VTKExporters)
-    {
+  {
     for (int i = 0; i < numPorts; i++)
+    {
+      if (this->VTKExporters[i])
       {
-      if ( this->VTKExporters[i] )
-        {
         this->VTKExporters[i]->Delete();
-        }
       }
     }
+  }
 
   if (this->VTKImporter)
-    {
+  {
     this->VTKImporter->Delete();
-    }
+  }
 }
 
 //----------------------------------------------------------------------------
@@ -77,52 +79,59 @@ void vtkITKImageFilter::InitializeITKImporters()
   this->VTKExporters = new vtkImageExport*[numPorts];
   this->ITKImporters = new ITKImageImportType::Pointer[numPorts];
   for (int i = 0; i < numPorts; i++)
-    {
-    this->VTKCasters[i]  = vtkImageCast::New();
+  {
+    this->VTKCasters[i] = vtkImageCast::New();
     this->VTKCasters[i]->SetOutputScalarTypeToFloat();
     this->VTKExporters[i] = vtkImageExport::New();
     this->ITKImporters[i] = ITKImageImportType::New();
 
     // Connect the vtkImageCast that converts the input to the
     // floating-point type we want to pass to ITK filters.
-    this->VTKExporters[i]->SetInputConnection(this->VTKCasters[i]->GetOutputPort());
+    this->VTKExporters[i]->SetInputConnection(
+      this->VTKCasters[i]->GetOutputPort());
 
     // This call takes the place of the usual SetInput() method.
     this->ITKImporters[i]->SetCallbackUserData(this->VTKExporters[i]);
 
     // Set the rest of the callbacks
-    this->ITKImporters[i]->SetBufferPointerCallback(this->VTKExporters[i]->GetBufferPointerCallback());
-    this->ITKImporters[i]->SetDataExtentCallback(this->VTKExporters[i]->GetDataExtentCallback());
-    this->ITKImporters[i]->SetOriginCallback(this->VTKExporters[i]->GetOriginCallback());
-    this->ITKImporters[i]->SetSpacingCallback(this->VTKExporters[i]->GetSpacingCallback());
-    this->ITKImporters[i]->SetNumberOfComponentsCallback(this->VTKExporters[i]->GetNumberOfComponentsCallback());
-    this->ITKImporters[i]->SetPipelineModifiedCallback(this->VTKExporters[i]->GetPipelineModifiedCallback());
-    this->ITKImporters[i]->SetPropagateUpdateExtentCallback(this->VTKExporters[i]->GetPropagateUpdateExtentCallback());
-    this->ITKImporters[i]->SetScalarTypeCallback(this->VTKExporters[i]->GetScalarTypeCallback());
-    this->ITKImporters[i]->SetUpdateDataCallback(this->VTKExporters[i]->GetUpdateDataCallback());
-    this->ITKImporters[i]->SetUpdateInformationCallback(this->VTKExporters[i]->GetUpdateInformationCallback());
-    this->ITKImporters[i]->SetWholeExtentCallback(this->VTKExporters[i]->GetWholeExtentCallback());
-    }
+    this->ITKImporters[i]->SetBufferPointerCallback(
+      this->VTKExporters[i]->GetBufferPointerCallback());
+    this->ITKImporters[i]->SetDataExtentCallback(
+      this->VTKExporters[i]->GetDataExtentCallback());
+    this->ITKImporters[i]->SetOriginCallback(
+      this->VTKExporters[i]->GetOriginCallback());
+    this->ITKImporters[i]->SetSpacingCallback(
+      this->VTKExporters[i]->GetSpacingCallback());
+    this->ITKImporters[i]->SetNumberOfComponentsCallback(
+      this->VTKExporters[i]->GetNumberOfComponentsCallback());
+    this->ITKImporters[i]->SetPipelineModifiedCallback(
+      this->VTKExporters[i]->GetPipelineModifiedCallback());
+    this->ITKImporters[i]->SetPropagateUpdateExtentCallback(
+      this->VTKExporters[i]->GetPropagateUpdateExtentCallback());
+    this->ITKImporters[i]->SetScalarTypeCallback(
+      this->VTKExporters[i]->GetScalarTypeCallback());
+    this->ITKImporters[i]->SetUpdateDataCallback(
+      this->VTKExporters[i]->GetUpdateDataCallback());
+    this->ITKImporters[i]->SetUpdateInformationCallback(
+      this->VTKExporters[i]->GetUpdateInformationCallback());
+    this->ITKImporters[i]->SetWholeExtentCallback(
+      this->VTKExporters[i]->GetWholeExtentCallback());
+  }
 }
 
 //----------------------------------------------------------------------------
 void vtkITKImageFilter::InitializeVTKImporters()
 {
-  // This call takes the place of the usual SetInput() method.
-  this->VTKImporter->SetCallbackUserData(ITKExporter->GetCallbackUserData());
-
-  // Set the rest of the callbacks
-  this->VTKImporter->SetUpdateInformationCallback(ITKExporter->GetUpdateInformationCallback());
-  this->VTKImporter->SetPipelineModifiedCallback(ITKExporter->GetPipelineModifiedCallback());
-  this->VTKImporter->SetWholeExtentCallback(ITKExporter->GetWholeExtentCallback());
-  this->VTKImporter->SetSpacingCallback(ITKExporter->GetSpacingCallback());
-  this->VTKImporter->SetOriginCallback(ITKExporter->GetOriginCallback());
-  this->VTKImporter->SetScalarTypeCallback(ITKExporter->GetScalarTypeCallback());
-  this->VTKImporter->SetNumberOfComponentsCallback(ITKExporter->GetNumberOfComponentsCallback());
-  this->VTKImporter->SetPropagateUpdateExtentCallback(ITKExporter->GetPropagateUpdateExtentCallback());
-  this->VTKImporter->SetUpdateDataCallback(ITKExporter->GetUpdateDataCallback());
-  this->VTKImporter->SetDataExtentCallback(ITKExporter->GetDataExtentCallback());
-  this->VTKImporter->SetBufferPointerCallback(ITKExporter->GetBufferPointerCallback());
+  if (this->VectorOutput)
+  {
+    this->InitializeSpecializedVTKImporters<ITKVectorImageExportType>(
+      this->ITKVectorImageExporter);
+  }
+  else
+  {
+    this->InitializeSpecializedVTKImporters<ITKImageExportType>(
+      this->ITKExporter);
+  }
 }
 
 //----------------------------------------------------------------------------
@@ -133,41 +142,43 @@ void vtkITKImageFilter::Init()
 }
 
 //----------------------------------------------------------------------------
-int vtkITKImageFilter::BeforeUpdateInternalFilters(vtkInformationVector** inputVector)
+int vtkITKImageFilter::BeforeUpdateInternalFilters(
+  vtkInformationVector** inputVector)
 {
   for (int i = 0; i < this->GetNumberOfInputPorts(); i++)
-    {
+  {
     // Check that the inputs are of type vtkImageData
-    vtkInformation *inInfo = inputVector[i]->GetInformationObject(0);
-    vtkImageData *input = vtkImageData::SafeDownCast
-      (inInfo->Get(vtkDataObject::DATA_OBJECT()));
-    if(!input)
-      {
+    vtkInformation* inInfo = inputVector[i]->GetInformationObject(0);
+    vtkImageData* input =
+      vtkImageData::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
+    if (!input)
+    {
       vtkErrorMacro("An input is not of type vtkImageData");
       return 0;
-      }
-
-    this->VTKCasters[i]->SetInput(input);
-    this->VTKCasters[i]->Update();
     }
+
+    this->VTKCasters[i]->SetInputData(input);
+    this->VTKCasters[i]->Update();
+  }
 
   return 1;
 }
 
 //----------------------------------------------------------------------------
-int vtkITKImageFilter::AfterUpdateInternalFilters(vtkInformationVector* outputVector)
+int vtkITKImageFilter::AfterUpdateInternalFilters(
+  vtkInformationVector* outputVector)
 {
   // Now connect the ITK pipeline output to the VTK output
   this->ITKExporter->Update();
 
-  vtkInformation *outInfo = outputVector->GetInformationObject(0);
-  vtkImageData *output = vtkImageData::SafeDownCast
-    (outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkInformation* outInfo = outputVector->GetInformationObject(0);
+  vtkImageData* output =
+    vtkImageData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
   if (!output)
-    {
+  {
     vtkErrorMacro("Output is not of type vtkImageData");
     return 0;
-    }
+  }
 
   this->VTKImporter->Update();
   this->VTKImporter->Update();
@@ -178,29 +189,29 @@ int vtkITKImageFilter::AfterUpdateInternalFilters(vtkInformationVector* outputVe
 }
 
 //----------------------------------------------------------------------------
-int vtkITKImageFilter::RequestData(vtkInformation *request,
-                                   vtkInformationVector **inputVector,
-                                   vtkInformationVector *outputVector)
+int vtkITKImageFilter::RequestData(vtkInformation* request,
+                                   vtkInformationVector** inputVector,
+                                   vtkInformationVector* outputVector)
 {
   try
-    {
+  {
     if (!this->BeforeUpdateInternalFilters(inputVector))
-      {
+    {
       return 0;
-      }
+    }
 
     this->UpdateInternalFilters();
 
     if (!this->AfterUpdateInternalFilters(outputVector))
-      {
-      return 0;
-      }
-    }
-  catch(itk::ExceptionObject& error)
     {
-	vtkErrorMacro(<< error.GetDescription());
-    return 0;
+      return 0;
     }
+  }
+  catch (itk::ExceptionObject& error)
+  {
+    vtkErrorMacro(<< error.GetDescription());
+    return 0;
+  }
 
   return 1;
 }
@@ -208,7 +219,7 @@ int vtkITKImageFilter::RequestData(vtkInformation *request,
 //----------------------------------------------------------------------------
 void vtkITKImageFilter::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }
 
 #endif // __vtkITKImageFilter_cxx

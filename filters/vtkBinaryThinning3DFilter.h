@@ -29,6 +29,11 @@ public:
 //  vtkSetMacro(Sigma, double);
 //  vtkGetMacro(Sigma, double);
 
+  void SetInputConnection(int port, vtkAlgorithmOutput* input) override
+    {vtkImageAlgorithm::SetInputConnection(port, input);}
+  void SetInputConnection(vtkAlgorithmOutput* input) override
+    {vtkImageAlgorithm::SetInputConnection(input);}
+
 protected:
   vtkBinaryThinning3DFilter();
   ~vtkBinaryThinning3DFilter();
